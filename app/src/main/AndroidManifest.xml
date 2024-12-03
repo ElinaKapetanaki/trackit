@@ -10,27 +10,14 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.SignUpActivity"
         tools:targetApi="31">
-
-        <!-- Η SignupActivity που ορίζεται ως η αρχική Activity -->
         <activity
-            android:name=".SignupActivity"
             android:label="@string/app_name"
-            android:exported="true"
-            android:theme="@style/Theme.SignUpActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <!-- Η MainActivity χωρίς το intent-filter εκκίνησης -->
-        <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.SignUpActivity" />
     </application>
 
 </manifest>
