@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
+rootProject.name = "SignUpActivity"
 include(":app")
- 

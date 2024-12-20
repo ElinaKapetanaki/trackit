@@ -4,17 +4,24 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.font.FontWeight
 import com.example.activity_signup.ui.theme.SignUpActivityTheme
+import androidx.compose.ui.text.input.VisualTransformation
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,75 +47,118 @@ fun SignupScreen(modifier: Modifier = Modifier, onSignupComplete: (String) -> Un
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
-    
-
 
     Column(
         modifier = modifier
             .fillMaxSize()
+            .background(Color(0xFFF5F5F5)) // Light background
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        TextField(
+        // Title
+        Text(
+            text = "Create Your Account",
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.Black
+        )
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Full Name Field
+        StyledTextField(
             value = fullName,
             onValueChange = { fullName = it },
-            label = { Text("Ονοματεπώνυμο") },
-            modifier = Modifier.fillMaxWidth()
+            label = "Full Name"
         )
-        Spacer(modifier = Modifier.height(8.dp))
-        TextField(
+
+        // Email Field
+        StyledTextField(
             value = email,
             onValueChange = { email = it },
-            label = { Text("Email") },
-            modifier = Modifier.fillMaxWidth()
+            label = "Email",
+            keyboardType = KeyboardType.Email
         )
-        Spacer(modifier = Modifier.height(8.dp))
-        TextField(
+
+        // Username Field
+        StyledTextField(
             value = username,
             onValueChange = { username = it },
-            label = { Text("Όνομα Χρήστη") },
-            modifier = Modifier.fillMaxWidth()
+            label = "Username"
         )
-        Spacer(modifier = Modifier.height(8.dp))
-        TextField(
+
+        // Password Field
+        StyledTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Κωδικός") },
-            modifier = Modifier.fillMaxWidth()
+            label = "Password",
+            isPassword = true
         )
-        Spacer(modifier = Modifier.height(8.dp))
-        TextField(
+
+        // Confirm Password Field
+        StyledTextField(
             value = confirmPassword,
             onValueChange = { confirmPassword = it },
-            label = { Text("Επιβεβαίωση Κωδικού") },
-            modifier = Modifier.fillMaxWidth()
+            label = "Confirm Password",
+            isPassword = true
         )
-        Spacer(modifier = Modifier.height(16.dp))
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Sign-Up Button
         Button(
             onClick = {
-                if (fullName.isEmpty() || email.isEmpty() || username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-                    onSignupComplete("Παρακαλώ συμπληρώστε όλα τα πεδία")
-                } else if (password != confirmPassword) {
-                    onSignupComplete("Οι κωδικοί δεν ταιριάζουν")
-                } else {
-                    onSignupComplete("Εγγραφή επιτυχής!")
+                when {
+                    fullName.isEmpty() || email.isEmpty() || username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty() ->
+                        onSignupComplete("Please fill out all fields")
+                    password != confirmPassword -> onSignupComplete("Passwords do not match")
+                    else -> onSignupComplete("Signup successful!")
                 }
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
+            shape = RoundedCornerShape(8.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
         ) {
-            Text("Εγγραφή")
+            Text("Sign Up", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
         }
-        Spacer(modifier = Modifier.height(8.dp)) // Κενό ανάμεσα στα κουμπιά
-        Button(
-            onClick = {
-                onSignupComplete("Μεταφορά στην είσοδο")
-            },
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Login Redirect Button
+        TextButton(
+            onClick = { onSignupComplete("Redirecting to login") },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Έχετε ήδη λογαριασμό; Συνδεθείτε")
+            Text("Already have an account? Login", color = Color.Gray, fontSize = 14.sp)
         }
     }
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+fun StyledTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+    isPassword: Boolean = false,
+    keyboardType: KeyboardType = KeyboardType.Text
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text(label) },
+        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
+        visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = Color.Black,
+            unfocusedBorderColor = Color.Gray
+        )
+    )
 }
 
 @Preview(showBackground = true)
