@@ -23,8 +23,7 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 
 /**
  * Το ViewModel: Κρατάει την κατάσταση (state) για τα 3 γραφήματα:
- * Weekly, Monthly, By Category. Εδώ τα έχουμε ως απλά στατικά δεδομένα
- * αλλά θα μπορούσες να τα φορτώνεις από Repository / API κ.λπ.
+ * Weekly, Monthly, By Category.
  */
 class ChartsViewModel : ViewModel() {
 
@@ -36,9 +35,9 @@ class ChartsViewModel : ViewModel() {
     val monthlyData = listOf(400f, 250f, 300f, 450f)
     val monthlyLabels = listOf("Week1", "Week2", "Week3", "Week4")
 
-    // Category data
-    val categoryData = listOf(200f, 150f, 80f, 120f, 60f)
-    val categoryLabels = listOf("Food", "Rent", "Bills", "Fun", "Other")
+    // Category data (νέα labels & τιμές)
+    val categoryData = listOf(300f, 50f, 120f, 40f, 150f)
+    val categoryLabels = listOf("Groceries", "Transport", "Social", "Insurance", "Other")
 
     /**
      * Φτιάχνουμε μια λίστα “ChartItem” που θα την “διαβάσει” το Compose
@@ -269,4 +268,5 @@ fun LineChartComposable(
 fun ChartsScreenPreview() {
     ChartsScreen()
 }
+
 
