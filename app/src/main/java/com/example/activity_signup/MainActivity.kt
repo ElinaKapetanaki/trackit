@@ -29,7 +29,7 @@ class MainActivity : ComponentActivity() {
             SignUpActivityTheme {
                 // Set ChartsScreen as the primary page
                 //ChartsScreen()
-                AddExpenseScreen()
+                AppNavigation()
             }
         }
     }

@@ -37,8 +37,6 @@ class HomeViewModel : ViewModel() {
     val expenses: Double
         get() = transactions.filter { it.amount < 0 }.sumOf { -it.amount }
 
-    var isLoading by mutableStateOf(true)
-        private set
 
     fun addTransaction(transaction: Transaction) {
         transactions = transactions + transaction

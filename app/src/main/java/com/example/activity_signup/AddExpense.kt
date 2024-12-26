@@ -48,11 +48,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.rememberNavController
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddExpenseScreen(viewModel: AddExpenseViewModel = viewModel()) {
+fun AddExpenseScreen(viewModel: AddExpenseViewModel = viewModel(),
+                     onSaveClick: () -> Unit,
+                     onBackClick: () -> Unit) {
     val context = LocalContext.current
 
     // Triggering the DatePickerDialog
@@ -75,7 +78,7 @@ fun AddExpenseScreen(viewModel: AddExpenseViewModel = viewModel()) {
             TopAppBar(
                 title = { Text("Add Amount", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.Black) },
                 navigationIcon = {
-                    IconButton(onClick = { /* Handle back navigation */ }) {
+                    IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "Back",
@@ -190,7 +193,8 @@ fun AddExpenseScreen(viewModel: AddExpenseViewModel = viewModel()) {
                         contentAlignment = Alignment.BottomCenter
                     ) {
                         Button(
-                            onClick = { viewModel.saveExpense() },
+                            onClick = {viewModel.saveExpense()
+                                onSaveClick()},
                             modifier = Modifier
                                 .padding(top = 16.dp)
                                 .fillMaxWidth()
@@ -284,5 +288,9 @@ fun DropdownMenuWithOptions(
 @Preview(showBackground = true)
 @Composable
 fun AddExpenseScreenPreview() {
-    AddExpenseScreen()
+    val navController = rememberNavController()
+    AddExpenseScreen(
+        onSaveClick = { },
+        onBackClick = { }
+    )
 }

@@ -14,13 +14,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -40,7 +36,7 @@ import com.example.activity_signup.ui.theme.SignUpActivityTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(viewModel: HomeViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
+fun HomeScreen(viewModel: HomeViewModel = androidx.lifecycle.viewmodel.compose.viewModel(), successMessage: String?, onAddButtonClick: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -54,8 +50,7 @@ fun HomeScreen(viewModel: HomeViewModel = androidx.lifecycle.viewmodel.compose.v
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = {/*goo user to add page*/
-                },
+                onClick = onAddButtonClick,
                 containerColor = Color.Black,
                 contentColor = Color.White,
                 modifier = Modifier.size(70.dp)
@@ -73,6 +68,20 @@ fun HomeScreen(viewModel: HomeViewModel = androidx.lifecycle.viewmodel.compose.v
                     .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                successMessage?.let {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(20.dp))
+                            .background(Color(0xFFB8E4C9)) // Pale Green Color
+                            .padding(16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(it, color = Color.Black, fontSize = 16.sp, fontWeight = FontWeight.Medium)
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -226,6 +235,6 @@ fun TransactionItem(transaction: Transaction) {
 @Composable
 fun HomeScreenPreview() {
     SignUpActivityTheme {
-        HomeScreen()
+        HomeScreen(successMessage = "Expense successfully added!", onAddButtonClick = {})
     }
 }
