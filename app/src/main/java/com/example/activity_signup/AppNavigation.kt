@@ -13,8 +13,12 @@ enum class AppScreen {
     HomeScreen,
     AddChoiceScreen,
     AddExpenseScreen,
-    AddIncomeScreen
+    AddIncomeScreen,
+    ChartsScreen,
+    MoneyConversionScreen, /*change to actual name*/
+    EditProfileScreen
 }
+
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
@@ -36,7 +40,11 @@ fun AppNavigation() {
             val successMessage = backStackEntry.arguments?.getString("successMessage")
             HomeScreen(
                 successMessage = successMessage,
-                onAddButtonClick = { navController.navigate(AppScreen.AddChoiceScreen.name) }
+                onHomeClick = { /* Already on Home, no action needed */ },
+                onChartsClick = { navController.navigate(AppScreen.ChartsScreen.name) },
+                onAddButtonClick = { navController.navigate(AppScreen.AddChoiceScreen.name) },
+                onExchangeClick = { navController.navigate(AppScreen.MoneyConversionScreen.name) },
+                onEditProfileClick = { navController.navigate(AppScreen.EditProfileScreen.name) }
             )
         }
 
@@ -66,6 +74,29 @@ fun AppNavigation() {
                     navController.navigate("${AppScreen.HomeScreen.name}?successMessage=Income successfully added!")
                 },
                 onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        // ChartsScreen route
+        composable(AppScreen.ChartsScreen.name) {
+            ChartsScreen(
+                onBackClick = { navController.popBackStack() },
+                onAddButtonClick = { navController.navigate(AppScreen.AddChoiceScreen.name) },
+                onEditProfileClick = { navController.navigate(AppScreen.EditProfileScreen.name) },
+                onHomeClick = { navController.navigate(AppScreen.HomeScreen.name) },
+                onChartsClick = { /* Already on this screen, no action needed */ },
+                onExchangeClick = { navController.navigate(AppScreen.MoneyConversionScreen.name) }
+            )
+        }
+
+        // EditProfileScreen Route
+        composable(AppScreen.EditProfileScreen.name) {
+            EditProfileScreen(
+                onHomeClick = { navController.navigate(AppScreen.HomeScreen.name) },
+                onChartsClick = { navController.navigate(AppScreen.ChartsScreen.name) },
+                onAddButtonClick = { navController.navigate(AppScreen.AddChoiceScreen.name) },
+                onExchangeClick = { navController.navigate(AppScreen.MoneyConversionScreen.name) },
+                onEditProfileClick = { /* Already on Edit Profile, no action */ }
             )
         }
     }

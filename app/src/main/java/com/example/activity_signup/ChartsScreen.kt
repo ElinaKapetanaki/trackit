@@ -1,12 +1,20 @@
 package com.example.activity_signup
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.BarChart
+import androidx.compose.material.icons.filled.CurrencyExchange
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
@@ -31,6 +39,11 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 @Composable
 fun ChartsScreen(
     onBackClick: () -> Unit = {},
+    onHomeClick: () -> Unit,
+    onChartsClick: () -> Unit,
+    onAddButtonClick: () -> Unit,
+    onExchangeClick: () -> Unit,
+    onEditProfileClick: () -> Unit,
     viewModel: ChartsViewModel = viewModel()
 ) {
     // Παίρνουμε τη λίστα chartItems από το ViewModel
@@ -55,7 +68,67 @@ fun ChartsScreen(
                     containerColor = Color.White
                 )
             )
-        }
+        },
+        bottomBar = {
+            BottomAppBar(
+                containerColor = Color.White,
+                tonalElevation = 4.dp
+            ) {
+                // Home Icon
+                IconButton(onClick = onHomeClick, modifier = Modifier.weight(1f)) {
+                    Icon(
+                        imageVector = Icons.Default.Home, // Replace with a Home icon if available
+                        contentDescription = "Home",
+                        tint = Color.Black
+                    )
+                }
+
+                // Charts Icon
+                IconButton(onClick = onChartsClick, modifier = Modifier.weight(1f)) {
+                    Icon(
+                        imageVector = Icons.Default.BarChart,
+                        contentDescription = "Charts",
+                        tint = Color.Black
+                    )
+                }
+
+                // "+" Button in the center
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .size(56.dp)
+                        .clip(CircleShape)
+                        .background(Color.Black)
+                        .align(Alignment.CenterVertically)
+                        .clickable { onAddButtonClick() },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Add",
+                        tint = Color.White
+                    )
+                }
+
+                // Exchange Icon
+                IconButton(onClick = onExchangeClick, modifier = Modifier.weight(1f)) {
+                    Icon(
+                        imageVector = Icons.Default.CurrencyExchange,
+                        contentDescription = "Exchange",
+                        tint = Color.Black
+                    )
+                }
+
+                // Edit Profile Icon
+                IconButton(onClick = onEditProfileClick, modifier = Modifier.weight(1f)) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Edit Profile",
+                        tint = Color.Black
+                    )
+                }
+            }
+        },
     ) { innerPadding ->
         Box(
             modifier = Modifier
@@ -263,14 +336,6 @@ fun BarChartComposable(
 }
 
 
-/**
- * Preview (συνήθως “στριμωγμένο”), αλλά βλέπεις μια γενική ιδέα.
- * Για οριστικό layout, τρέξε σε emulator / συσκευή.
- */
-@Preview(showBackground = true)
-@Composable
-fun ChartsScreenPreview() {
-    ChartsScreen()
-}
+
 
 

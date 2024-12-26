@@ -1,6 +1,7 @@
 package com.example.activity_signup
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,9 +15,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.BarChart
+import androidx.compose.material.icons.filled.CurrencyExchange
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FabPosition
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -31,12 +40,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.activity_signup.ui.theme.SignUpActivityTheme
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(viewModel: HomeViewModel = androidx.lifecycle.viewmodel.compose.viewModel(), successMessage: String?, onAddButtonClick: () -> Unit) {
+fun HomeScreen(
+    viewModel: HomeViewModel = viewModel(),
+    successMessage: String?,
+    onHomeClick: () -> Unit,
+    onChartsClick: () -> Unit,
+    onAddButtonClick: () -> Unit,
+    onExchangeClick: () -> Unit,
+    onEditProfileClick: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -48,17 +65,67 @@ fun HomeScreen(viewModel: HomeViewModel = androidx.lifecycle.viewmodel.compose.v
                 )
             )
         },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = onAddButtonClick,
-                containerColor = Color.Black,
-                contentColor = Color.White,
-                modifier = Modifier.size(70.dp)
+
+        bottomBar = {
+            BottomAppBar(
+                containerColor = Color.White,
+                tonalElevation = 4.dp
             ) {
-                Text("+", fontSize = 28.sp, fontWeight = FontWeight.Bold)
+                // Home Icon
+                IconButton(onClick = onHomeClick, modifier = Modifier.weight(1f)) {
+                    Icon(
+                        imageVector = Icons.Default.Home, // Replace with a Home icon if available
+                        contentDescription = "Home",
+                        tint = Color.Black
+                    )
+                }
+
+                // Charts Icon
+                IconButton(onClick = onChartsClick, modifier = Modifier.weight(1f)) {
+                    Icon(
+                        imageVector = Icons.Default.BarChart,
+                        contentDescription = "Charts",
+                        tint = Color.Black
+                    )
+                }
+
+                // "+" Button in the center
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .size(56.dp)
+                        .clip(CircleShape)
+                        .background(Color.Black)
+                        .align(Alignment.CenterVertically)
+                        .clickable { onAddButtonClick() },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Add",
+                        tint = Color.White
+                    )
+                }
+
+                // Exchange Icon
+                IconButton(onClick = onExchangeClick, modifier = Modifier.weight(1f)) {
+                    Icon(
+                        imageVector = Icons.Default.CurrencyExchange,
+                        contentDescription = "Exchange",
+                        tint = Color.Black
+                    )
+                }
+
+                // Edit Profile Icon
+                IconButton(onClick = onEditProfileClick, modifier = Modifier.weight(1f)) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Edit Profile",
+                        tint = Color.Black
+                    )
+                }
             }
         },
-        floatingActionButtonPosition = FabPosition.Center,
         content = { innerPadding ->
             Column(
                 modifier = Modifier
@@ -235,6 +302,12 @@ fun TransactionItem(transaction: Transaction) {
 @Composable
 fun HomeScreenPreview() {
     SignUpActivityTheme {
-        HomeScreen(successMessage = "Expense successfully added!", onAddButtonClick = {})
+        HomeScreen(
+            successMessage = "Expense successfully added!", onAddButtonClick = {},
+            onHomeClick = {},
+            onChartsClick = {},
+            onExchangeClick = {},
+            onEditProfileClick = {},
+        )
     }
 }
