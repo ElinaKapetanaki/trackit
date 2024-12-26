@@ -1,7 +1,6 @@
 package com.example.activity_signup
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -29,7 +28,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             SignUpActivityTheme {
                 // Set ChartsScreen as the primary page
-                ChartsScreen()
+                //ChartsScreen()
+                AddExpenseScreen()
             }
         }
     }
