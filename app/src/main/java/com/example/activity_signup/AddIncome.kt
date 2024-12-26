@@ -1,5 +1,6 @@
 package com.example.activity_signup
 
+import android.app.DatePickerDialog
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -26,24 +28,44 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddIncomeScreen(onSaveClick: () -> Unit,
-                    onBackClick: () -> Unit) {
+fun AddIncomeScreen(
+    viewModel: AddIncomeViewModel = viewModel(),
+    onSaveClick: () -> Unit,
+    onBackClick: () -> Unit
+) {
+    val context = LocalContext.current
+
+    // Triggering the DatePickerDialog
+    val datePickerDialog = remember {
+        DatePickerDialog(
+            context,
+            { _, year, month, dayOfMonth ->
+                val formattedDate = String.format("%02d/%02d/%04d", dayOfMonth, month + 1, year)
+                viewModel.onDateSelected(formattedDate)
+            },
+            viewModel.calendar.get(Calendar.YEAR),
+            viewModel.calendar.get(Calendar.MONTH),
+            viewModel.calendar.get(Calendar.DAY_OF_MONTH)
+        )
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -64,8 +86,6 @@ fun AddIncomeScreen(onSaveClick: () -> Unit,
             )
         },
         content = { innerPadding ->
-            var selectedDate by remember { mutableStateOf("Select Date") }
-
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -77,7 +97,7 @@ fun AddIncomeScreen(onSaveClick: () -> Unit,
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
-                    // Main Form Content in a black card
+                    // Main Form Content
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -88,34 +108,19 @@ fun AddIncomeScreen(onSaveClick: () -> Unit,
                         Spacer(modifier = Modifier.height(16.dp))
 
                         // Amount Input
-                        Text(
-                            text = "Amount",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = Color.White
-                        )
+                        Text("Amount", fontSize = 16.sp, fontWeight = FontWeight.Medium, color = Color.White)
                         Spacer(modifier = Modifier.height(8.dp))
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text(
-                                text = "$",
-                                fontSize = 28.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White
-                            )
+                            Text("€", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Color.White)
                             Spacer(modifier = Modifier.width(8.dp))
                             TextField(
-                                value = "",
-                                onValueChange = { /* Handle amount input */ },
+                                value = viewModel.amount,
+                                onValueChange = { viewModel.onAmountChange(it) },
                                 placeholder = {
-                                    Text(
-                                        text = "1000",
-                                        color = Color.LightGray,
-                                        fontSize = 28.sp,
-                                        fontWeight = FontWeight.Bold
-                                    )
+                                    Text("1000", color = Color.LightGray, fontSize = 28.sp, fontWeight = FontWeight.Bold)
                                 },
                                 textStyle = TextStyle(
                                     fontSize = 28.sp,
@@ -125,52 +130,40 @@ fun AddIncomeScreen(onSaveClick: () -> Unit,
                                 colors = TextFieldDefaults.textFieldColors(
                                     containerColor = Color.Transparent,
                                     focusedIndicatorColor = Color.LightGray,
-                                    unfocusedIndicatorColor = Color.Gray,
-                                    focusedTextColor = Color.White,
-                                    unfocusedTextColor = Color.White
+                                    unfocusedIndicatorColor = Color.Gray
+                                ),
+                                keyboardOptions = KeyboardOptions.Default.copy(
+                                    keyboardType = KeyboardType.Number
                                 ),
                                 modifier = Modifier.weight(1f),
                                 singleLine = true
                             )
-                            Text(
-                                text = "USD",
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Medium,
-                                color = Color.LightGray
-                            )
                         }
                         Spacer(modifier = Modifier.height(24.dp))
 
-                        // Date Field
-                        Text(
-                            text = "Date",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = Color.White
-                        )
+                        // Date Picker
+                        Text("Date", fontSize = 16.sp, fontWeight = FontWeight.Medium, color = Color.White)
                         Spacer(modifier = Modifier.height(8.dp))
                         Button(
-                            onClick = {
-                                // Implement date picker logic
-                                selectedDate = "01/01/2024"
-                            },
+                            onClick = { datePickerDialog.show() },
                             modifier = Modifier.fillMaxWidth(),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray),
-                            shape = RoundedCornerShape(20.dp)
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray)
                         ) {
-                            Text(selectedDate, color = Color.White, fontSize = 16.sp)
+                            Text(viewModel.selectedDate, color = Color.White, fontSize = 16.sp)
                         }
-
                         Spacer(modifier = Modifier.height(16.dp))
                     }
 
-                    // Save Button at the bottom
+                    // Save Button
                     Box(
                         modifier = Modifier.fillMaxWidth(),
                         contentAlignment = Alignment.BottomCenter
                     ) {
                         Button(
-                            onClick = onSaveClick,
+                            onClick = {
+                                viewModel.saveIncome()
+                                onSaveClick()
+                            },
                             modifier = Modifier
                                 .padding(top = 16.dp)
                                 .fillMaxWidth()
@@ -190,9 +183,8 @@ fun AddIncomeScreen(onSaveClick: () -> Unit,
 @Preview(showBackground = true)
 @Composable
 fun AddIncomeScreenPreview() {
-
     AddIncomeScreen(
-        onSaveClick = {},
-        onBackClick = {},
+        onSaveClick = { },
+        onBackClick = { }
     )
 }
