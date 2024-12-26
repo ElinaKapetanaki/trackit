@@ -41,6 +41,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.mpandroidchart)
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

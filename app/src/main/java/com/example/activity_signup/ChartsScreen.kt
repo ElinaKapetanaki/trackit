@@ -1,3 +1,5 @@
+package com.example.activity_signup
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,66 +16,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.*
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.components.*
 import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
-
-/**
- * Το ViewModel: Κρατάει την κατάσταση (state) για τα 3 γραφήματα:
- * Weekly, Monthly, By Category.
- */
-class ChartsViewModel : ViewModel() {
-
-    // Weekly data
-    val weeklyData = listOf(120f, 80f, 150f, 60f, 100f, 30f, 100f)
-    val weeklyLabels = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
-
-    // Monthly data
-    val monthlyData = listOf(400f, 250f, 300f, 450f)
-    val monthlyLabels = listOf("Week1", "Week2", "Week3", "Week4")
-
-    // Category data (νέα labels & τιμές)
-    val categoryData = listOf(300f, 50f, 120f, 40f, 150f)
-    val categoryLabels = listOf("Groceries", "Transport", "Social", "Insurance", "Other")
-
-    /**
-     * Φτιάχνουμε μια λίστα “ChartItem” που θα την “διαβάσει” το Compose
-     * για να εμφανίσει 3 ενότητες στο LazyColumn.
-     */
-    val chartItems = listOf(
-        ChartItem(
-            title = "This Week's Expenses",
-            description = "Track how your daily spending sums up over the week.",
-            data = weeklyData,
-            labels = weeklyLabels
-        ),
-        ChartItem(
-            title = "Monthly Overview",
-            description = "Get a broader view of your expenses this month.",
-            data = monthlyData,
-            labels = monthlyLabels
-        ),
-        ChartItem(
-            title = "By Category",
-            description = "See which categories consume most of your spending.",
-            data = categoryData,
-            labels = categoryLabels
-        )
-    )
-}
-
-/**
- * Δομή δεδομένων για το κάθε γράφημα (τίτλος, περιγραφή, data, labels).
- */
-data class ChartItem(
-    val title: String,
-    val description: String,
-    val data: List<Float>,
-    val labels: List<String>
-)
 
 /**
  * Το κύριο Composable (ChartsScreen) που παίρνει το ChartsViewModel
@@ -178,18 +126,20 @@ fun CategoryChartSection(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(250.dp) // Λιγότερο ύψος για να χωράνε όλα στην οθόνη
+                .height(250.dp)
                 .clip(RoundedCornerShape(20.dp))
                 .background(Color.Black),
             contentAlignment = Alignment.Center
         ) {
-            LineChartComposable(
-                data = data,
-                labels = labels
-            )
+            if (title == "By Category") {
+                BarChartComposable(data = data, labels = labels)
+            } else {
+                LineChartComposable(data = data, labels = labels)
+            }
         }
     }
 }
+
 
 /**
  * To LineChartComposable (MPAndroidChart) που σχεδιάζει λευκή γραμμή σε μαύρο background.
@@ -258,6 +208,60 @@ fun LineChartComposable(
         }
     )
 }
+
+@Composable
+fun BarChartComposable(
+    data: List<Float>,
+    labels: List<String>
+) {
+    AndroidView(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(220.dp),
+        factory = { context ->
+            BarChart(context).apply {
+                description.isEnabled = false
+                setDrawGridBackground(false)
+                setPinchZoom(false)
+                animateY(1500)
+                setBackgroundColor(android.graphics.Color.BLACK)
+
+                xAxis.apply {
+                    textSize = 12f
+                    textColor = android.graphics.Color.WHITE
+                    position = XAxis.XAxisPosition.BOTTOM
+                    setDrawGridLines(false)
+                    granularity = 1f
+                    valueFormatter = IndexAxisValueFormatter(labels)
+                }
+                axisLeft.apply {
+                    textSize = 14f
+                    textColor = android.graphics.Color.WHITE
+                    setDrawGridLines(false)
+                }
+                axisRight.isEnabled = false
+                legend.isEnabled = false
+            }
+        },
+        update = { chart ->
+            val entries = data.mapIndexed { index, value -> BarEntry(index.toFloat(), value) }
+            val dataSet = BarDataSet(entries, "Categories").apply {
+                colors = listOf(
+                    android.graphics.Color.parseColor("#FFCCCB"), // Food
+                    android.graphics.Color.parseColor("#AECBFA"), // Shopping
+                    android.graphics.Color.parseColor("#F8BBE8"), // Entertainment
+                    android.graphics.Color.parseColor("#B8E4C9"),  // Rent
+                    android.graphics.Color.parseColor("#FFD700")  // Other
+                )
+                valueTextColor = android.graphics.Color.WHITE
+                valueTextSize = 12f
+            }
+            chart.data = BarData(dataSet)
+            chart.invalidate()
+        }
+    )
+}
+
 
 /**
  * Preview (συνήθως “στριμωγμένο”), αλλά βλέπεις μια γενική ιδέα.

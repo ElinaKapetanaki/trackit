@@ -28,17 +28,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             SignUpActivityTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    SignupScreen(
-                        modifier = Modifier.padding(innerPadding)
-                    ) { message ->
-                        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-                    }
-                }
+                // Set ChartsScreen as the primary page
+                ChartsScreen()
             }
         }
     }
 }
+
 
 @Composable
 fun SignupScreen(modifier: Modifier = Modifier, onSignupComplete: (String) -> Unit) {

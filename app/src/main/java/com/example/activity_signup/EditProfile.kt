@@ -1,8 +1,5 @@
 package com.example.activity_signup
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -14,26 +11,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.text.input.VisualTransformation
-
-
-class EditProfileActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            EditProfileScreen()
-        }
-    }
-}
 
 @Composable
 fun EditProfileScreen() {
+    // Χρήση state για όλα τα πεδία
     var fullName by remember { mutableStateOf("John Doe") }
     var username by remember { mutableStateOf("john_doe") }
     var password by remember { mutableStateOf("password123") }
@@ -44,7 +32,7 @@ fun EditProfileScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF5F5F5)) // Light background
+            .background(Color(0xFFF5F5F5))
     ) {
         // Header Section
         Box(
@@ -147,7 +135,7 @@ fun EditProfileScreen() {
                     .padding(16.dp)
                     .height(50.dp),
                 shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Black )
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
             ) {
                 Text("SAVE", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
             }
@@ -199,3 +187,6 @@ fun ProfileField(
 fun EditProfileScreenPreview() {
     EditProfileScreen()
 }
+
+
+
