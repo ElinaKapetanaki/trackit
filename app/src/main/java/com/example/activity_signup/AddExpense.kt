@@ -137,7 +137,6 @@ fun AddExpenseScreen(viewModel: AddExpenseViewModel = viewModel()) {
                                 modifier = Modifier.weight(1f),
                                 singleLine = true
                             )
-                            Text("Euro", fontSize = 16.sp, fontWeight = FontWeight.Medium, color = Color.LightGray)
                         }
                         Spacer(modifier = Modifier.height(24.dp))
 

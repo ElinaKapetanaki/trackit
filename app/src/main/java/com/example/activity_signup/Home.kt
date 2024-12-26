@@ -45,15 +45,7 @@ fun HomeScreen(viewModel: HomeViewModel = androidx.lifecycle.viewmodel.compose.v
         topBar = {
             TopAppBar(
                 title = { Text("Dashboard", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.Black) },
-                navigationIcon = {
-                    IconButton(onClick = { /* Could open a drawer or settings */ }) {
-                        Icon(
-                            imageVector = Icons.Default.Settings,
-                            contentDescription = "Settings",
-                            tint = Color.Black
-                        )
-                    }
-                },
+
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = Color.White,
                     titleContentColor = Color.Black
@@ -133,13 +125,6 @@ fun WelcomeHeader(userName: String, textColor: Color = Color.White, iconTint: Co
         Column {
             Text("Welcome,", fontSize = 18.sp, color = textColor)
             Text(userName, fontSize = 22.sp, fontWeight = FontWeight.Bold, color = textColor)
-        }
-        IconButton(onClick = { /* Settings logic */ }) {
-            Icon(
-                imageVector = Icons.Default.Settings,
-                contentDescription = "Settings",
-                tint = iconTint
-            )
         }
     }
 }
