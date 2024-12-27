@@ -15,8 +15,8 @@
 
         <!-- Set MainActivity as the launcher activity -->
         <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name"
+            android:name=".LoginActivity"
+            android:label="Login"
             android:exported="true"
             android:theme="@style/Theme.SignUpActivity">
             <intent-filter>
@@ -24,12 +24,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name"
+            android:exported="true"
+            android:theme="@style/Theme.SignUpActivity">
+        </activity>
         <!-- Home Activity-->
         <activity
-            android:name=".HomeActivity"
+            android:name=".HomeViewModel"
             android:label="Home"
             android:exported="true"
-            android:theme="@style/Theme.SignUpActivity" />
+            android:theme="@style/Theme.SignUpActivity"
+            tools:ignore="Instantiatable" />
     </application>
 
 </manifest>
