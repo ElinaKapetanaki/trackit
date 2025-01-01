@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.activity_signup"
+    namespace = "com.trackit"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.activity_signup"
+        applicationId = "com.trackit"
         minSdk = 24
         targetSdk = 34
         versionCode = 1

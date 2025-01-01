@@ -1,12 +1,6 @@
 pluginManagement {
     repositories {
-        google {
-            content {
-                includeGroupByRegex("com\\.android.*")
-                includeGroupByRegex("com\\.google.*")
-                includeGroupByRegex("androidx.*")
-            }
-        }
+        google()
         mavenCentral()
         gradlePluginPortal()
     }
@@ -17,10 +11,9 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        // Add JitPack for MPAndroidChart
         maven { url = uri("https://jitpack.io") }
     }
 }
 
-rootProject.name = "SignUpActivity"
+rootProject.name = "TrackIt"
 include(":app")
