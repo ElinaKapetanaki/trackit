@@ -55,8 +55,8 @@
 
 1. **Clone the Repository**:
    ```bash
-   git clone <repository-link>
-   cd TrackIt
+   git clone https://github.com/ElinaKapetanaki/trackit.git
+   cd trackit
 2. **Open project on Android Studio**
 3. **Sync Gradle Files**
 4. **Run the application on your emulator**
