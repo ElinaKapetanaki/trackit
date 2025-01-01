@@ -3,35 +3,13 @@ package com.trackit.ui
 import android.app.DatePickerDialog
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,39 +24,51 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.trackit.ui.components.BlackButton
 import com.trackit.ui.components.PageTopBar
-import com.trackit.viewmodel.AddExpenseViewModel
+import com.trackit.viewmodel.AppViewModelProvider
+import com.trackit.viewmodel.ExpenseViewModel
+import kotlinx.coroutines.launch
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddExpenseScreen(viewModel: AddExpenseViewModel = viewModel(),
-                     onSaveClick: () -> Unit,
-                     onBackClick: () -> Unit) {
+fun AddExpenseScreen(
+    expenseViewModel: ExpenseViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    onBackClick: () -> Unit,
+    onExpenseSaved: () -> Unit
+) {
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    // Triggering the DatePickerDialog
+    // Observing ViewModel states
+    val amount by expenseViewModel.amount.collectAsState()
+    val category by expenseViewModel.category.collectAsState()
+    val description by expenseViewModel.description.collectAsState()
+    val date by expenseViewModel.date.collectAsState()
+    val categories by expenseViewModel.categories.collectAsState()
+
+    // DatePickerDialog setup
     val datePickerDialog = remember {
         DatePickerDialog(
             context,
             { _, year, month, dayOfMonth ->
-                // Format the selected date and update the ViewModel
                 val formattedDate = String.format("%02d/%02d/%04d", dayOfMonth, month + 1, year)
-                viewModel.onDateSelected(formattedDate)
+                expenseViewModel.updateDate(formattedDate)
             },
-            viewModel.calendar.get(Calendar.YEAR),
-            viewModel.calendar.get(Calendar.MONTH),
-            viewModel.calendar.get(Calendar.DAY_OF_MONTH)
+            Calendar.getInstance().get(Calendar.YEAR),
+            Calendar.getInstance().get(Calendar.MONTH),
+            Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
         )
     }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             PageTopBar(
-                title = "Add expense",
+                title = "Add Expense",
                 onBackClick = onBackClick
             )
         },
-
         content = { innerPadding ->
             Box(
                 modifier = Modifier
@@ -110,8 +100,8 @@ fun AddExpenseScreen(viewModel: AddExpenseViewModel = viewModel(),
                             Text("€", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Color.White)
                             Spacer(modifier = Modifier.width(8.dp))
                             TextField(
-                                value = viewModel.amount,
-                                onValueChange = { viewModel.onAmountChange(it) },
+                                value = amount,
+                                onValueChange = { expenseViewModel.updateAmount(it) },
                                 placeholder = {
                                     Text("50", color = Color.LightGray, fontSize = 28.sp, fontWeight = FontWeight.Bold)
                                 },
@@ -134,9 +124,9 @@ fun AddExpenseScreen(viewModel: AddExpenseViewModel = viewModel(),
                         Text("Expenses made for", fontSize = 16.sp, fontWeight = FontWeight.Medium, color = Color.White)
                         Spacer(modifier = Modifier.height(8.dp))
                         DropdownMenuWithOptions(
-                            options = viewModel.categories,
-                            onSelected = { viewModel.onCategorySelected(it) },
-                            selectedOption = viewModel.selectedCategory,
+                            options = categories,
+                            onSelected = { expenseViewModel.updateCategory(it) },
+                            selectedOption = category,
                             backgroundColor = Color.DarkGray,
                             textColor = Color.White
                         )
@@ -146,8 +136,8 @@ fun AddExpenseScreen(viewModel: AddExpenseViewModel = viewModel(),
                         Text("Description", fontSize = 16.sp, fontWeight = FontWeight.Medium, color = Color.White)
                         Spacer(modifier = Modifier.height(8.dp))
                         TextField(
-                            value = viewModel.description,
-                            onValueChange = { viewModel.onDescriptionChange(it) },
+                            value = description,
+                            onValueChange = { expenseViewModel.updateDescription(it) },
                             placeholder = {
                                 Text("Dinner with Victor", color = Color.LightGray)
                             },
@@ -169,7 +159,7 @@ fun AddExpenseScreen(viewModel: AddExpenseViewModel = viewModel(),
                             modifier = Modifier.fillMaxWidth(),
                             colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray)
                         ) {
-                            Text(viewModel.selectedDate, color = Color.White, fontSize = 16.sp)
+                            Text(date, color = Color.White, fontSize = 16.sp)
                         }
                         Spacer(modifier = Modifier.height(16.dp))
                     }
@@ -181,8 +171,20 @@ fun AddExpenseScreen(viewModel: AddExpenseViewModel = viewModel(),
                     ) {
                         BlackButton(
                             text = "Save",
-                            onClick = {viewModel.saveExpense()
-                                onSaveClick()},
+                            onClick = {
+                                coroutineScope.launch {
+                                    expenseViewModel.saveExpense(
+                                        onSuccess = {
+                                            onExpenseSaved()
+                                        },
+                                        onError = { message ->
+                                            coroutineScope.launch {
+                                                snackbarHostState.showSnackbar(message)
+                                            }
+                                        }
+                                    )
+                                }
+                            },
                             cornerRadius = 20
                         )
                     }
@@ -192,7 +194,6 @@ fun AddExpenseScreen(viewModel: AddExpenseViewModel = viewModel(),
     )
 }
 
-
 @Composable
 fun DropdownMenuWithOptions(
     options: List<String>,
@@ -200,7 +201,7 @@ fun DropdownMenuWithOptions(
     selectedOption: String,
     backgroundColor: Color = Color.DarkGray,
     textColor: Color = Color.LightGray,
-    selectedItemColor: Color = Color.Black // Color for highlighting selected item
+    selectedItemColor: Color = Color.Black
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -210,7 +211,7 @@ fun DropdownMenuWithOptions(
             .clip(RoundedCornerShape(8.dp))
             .background(backgroundColor)
             .clickable { expanded = true }
-            .padding(horizontal = 16.dp, vertical = 12.dp) // Adjust padding for better spacing
+            .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -254,7 +255,7 @@ fun DropdownMenuWithOptions(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 12.dp) // Ensures sufficient tappable area
+                        .padding(vertical = 12.dp)
                         .background(if (option == selectedOption) selectedItemColor else backgroundColor)
                 )
             }
@@ -266,7 +267,7 @@ fun DropdownMenuWithOptions(
 @Composable
 fun AddExpenseScreenPreview() {
     AddExpenseScreen(
-        onSaveClick = { },
-        onBackClick = { }
+        onBackClick = {},
+        onExpenseSaved = {}
     )
 }

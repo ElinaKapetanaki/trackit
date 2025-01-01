@@ -2,11 +2,15 @@ package com.trackit.ui
 
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.trackit.viewmodel.UserSessionViewModel
 
 
 enum class AppScreen {
@@ -37,6 +41,7 @@ fun AppNavigation() {
                     navController.navigate(AppScreen.HomeScreen.name) {
                         popUpTo(AppScreen.LoginScreen.name) { inclusive = true }
                     }
+
                 }
             )
         }
@@ -90,10 +95,10 @@ fun AppNavigation() {
         // AddExpenseScreen Route
         composable(AppScreen.AddExpenseScreen.name) {
             AddExpenseScreen(
-                onSaveClick = {
+                onExpenseSaved = {
                     navController.navigate("${AppScreen.HomeScreen.name}?successMessage=Expense successfully added!")
                 },
-                onBackClick = { navController.popBackStack() }
+                onBackClick = { navController.popBackStack() },
             )
         }
 

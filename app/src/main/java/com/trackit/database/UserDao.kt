@@ -14,4 +14,11 @@ interface UserDao {
 
     @Query("SELECT * FROM User WHERE emailOrUsername = :emailOrUsername")
     suspend fun findUserByUsername(emailOrUsername: String): User?
+
+    @Query("SELECT * FROM User WHERE id = :userId")
+    suspend fun findUserById(userId: Int): User?
+
+    @Query("DELETE FROM User WHERE emailOrUsername = :emailOrUsername")
+    suspend fun deleteUserByEmail(emailOrUsername: String)
+
 }

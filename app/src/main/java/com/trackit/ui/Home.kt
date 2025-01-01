@@ -17,7 +17,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,23 +32,29 @@ import com.trackit.ui.components.PageTopBar
 import com.trackit.ui.theme.SignUpActivityTheme
 import com.trackit.viewmodel.HomeViewModel
 import com.trackit.viewmodel.Transaction
+import com.trackit.viewmodel.AppViewModelProvider
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel = viewModel(),
+    viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory),
     successMessage: String?,
     onHomeClick: () -> Unit,
     onChartsClick: () -> Unit,
     onAddButtonClick: () -> Unit,
     onExchangeClick: () -> Unit,
-    onEditProfileClick: () -> Unit) {
+    onEditProfileClick: () -> Unit
+) {
+    // Observing data from the ViewModel
+    val transactions = viewModel.transactions
+    val balance = viewModel.balance
+    val expenses = viewModel.expenses
+    val userName = viewModel.userName
+
     Scaffold(
         topBar = {
-            PageTopBar(
-                title = "Dashboard"
-            )
+            PageTopBar(title = "Dashboard")
         },
         bottomBar = {
             BottomNavBar(
@@ -74,15 +79,16 @@ fun HomeScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(20.dp))
-                            .background(Color(0xFFB8E4C9)) // Pale Green Color
+                            .background(Color(0xFFB8E4C9))
                             .padding(16.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(it, color = Color.Black, fontSize = 16.sp, fontWeight = FontWeight.Medium)
                     }
-
                     Spacer(modifier = Modifier.height(16.dp))
                 }
+
+                // Balance and User Info
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -93,104 +99,63 @@ fun HomeScreen(
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         WelcomeHeader(
-                            userName = viewModel.userName,
+                            userName = userName,
                             textColor = Color.White,
                             iconTint = Color.White
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         BalanceCard(
-                            balance = viewModel.balance,
+                            balance = balance,
                             income = viewModel.income,
-                            expenses = viewModel.expenses
+                            expenses = expenses
                         )
                     }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                // Transactions List
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(450.dp)
                         .clip(RoundedCornerShape(20.dp))
                         .background(Color.Black)
                         .padding(16.dp)
                 ) {
-                    TransactionList(transactions = viewModel.transactions)
+                    // Show Transactions or Empty State
+                    if (transactions.isEmpty()) {
+                        EmptyState()
+                    } else {
+                        TransactionList(transactions = transactions)
+                    }
                 }
             }
         }
     )
 }
 
-
 @Composable
-fun WelcomeHeader(userName: String, textColor: Color = Color.White, iconTint: Color = Color.White) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column {
-            Text("Welcome,", fontSize = 18.sp, color = textColor)
-            Text(userName, fontSize = 22.sp, fontWeight = FontWeight.Bold, color = textColor)
-        }
-    }
-}
-
-@Composable
-fun BalanceCard(balance: Double, income: Double, expenses: Double) {
-    Box(
+fun EmptyState() {
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .height(150.dp)
-            .clip(RoundedCornerShape(20.dp))
-            .background(Color.DarkGray),
-        contentAlignment = Alignment.Center
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text("Total Balance", fontSize = 18.sp, color = Color.White)
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "$${"%.2f".format(balance)}",
-                fontSize = 36.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth(0.8f)
-            ) {
-                Text("Income: $${"%.2f".format(income)}", color = Color(0xFF98FB98), fontSize = 14.sp)
-                Text("Expenses: $${"%.2f".format(expenses)}", color = Color(0xFFFFC0CB), fontSize = 14.sp)
-            }
-        }
-    }
-}
 
-@Composable
-fun TransactionList(transactions: List<Transaction>) {
-    Column(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text("Transactions", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
-            TextButton(onClick = { /* View All Transactions Logic */ }) {
-                Text("View All", color = Color.LightGray)
-            }
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-
-        transactions.forEach {
-            Spacer(modifier = Modifier.height(8.dp))
-            TransactionItem(it)
-        }
+        Text(
+            text = "You don’t have any transactions yet.",
+            fontSize = 16.sp,
+            color = Color.Gray
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = "Use the '+' button below to add your first expense or income.",
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Medium,
+            color = Color.LightGray
+        )
     }
 }
 
@@ -224,11 +189,79 @@ fun TransactionItem(transaction: Transaction) {
             Text(transaction.date, fontSize = 14.sp, color = Color.Gray)
         }
         Text(
-            text = if (transaction.amount > 0) "+€${"%.2f".format(transaction.amount)}" else "€${"%.2f".format(transaction.amount)}",
+            text = if (transaction.isExpense) "-€${"%.2f".format(transaction.amount)}"
+            else "+€${"%.2f".format(transaction.amount)}",
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
-            color = if (transaction.amount > 0) Color(0xFF4CAF50) else Color(0xFFFF5722)
+            color = if (transaction.isExpense) Color(0xFFFF5722) else Color(0xFF4CAF50)
         )
+    }
+}
+
+
+@Composable
+fun BalanceCard(balance: Double, income: Double, expenses: Double) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(150.dp)
+            .clip(RoundedCornerShape(20.dp))
+            .background(Color.DarkGray),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text("Total Balance", fontSize = 18.sp, color = Color.White)
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "€${"%.2f".format(balance)}",
+                fontSize = 36.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth(0.8f)
+            ) {
+                Text("Income: €${"%.2f".format(income)}", color = Color(0xFF98FB98), fontSize = 14.sp)
+                Text("Expenses: €${"%.2f".format(expenses)}", color = Color(0xFFFFC0CB), fontSize = 14.sp)
+            }
+        }
+    }
+}
+
+@Composable
+fun WelcomeHeader(userName: String, textColor: Color = Color.White, iconTint: Color) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column {
+            Text("Welcome,", fontSize = 18.sp, color = textColor)
+            Text(userName, fontSize = 22.sp, fontWeight = FontWeight.Bold, color = textColor)
+        }
+    }
+}
+
+@Composable
+fun TransactionList(transactions: List<Transaction>) {
+    Column(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text("Transactions", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+
+        transactions.forEach {
+            Spacer(modifier = Modifier.height(8.dp))
+            TransactionItem(it)
+        }
     }
 }
 
@@ -245,3 +278,4 @@ fun HomeScreenPreview() {
         )
     }
 }
+

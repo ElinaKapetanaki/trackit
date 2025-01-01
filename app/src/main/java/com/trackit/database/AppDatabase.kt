@@ -5,9 +5,10 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [User::class], version = 1, exportSchema = false) // exportSchema = false to remove warning
+@Database(entities = [User::class, Expense::class], version = 3, exportSchema = false) // exportSchema = false to remove warnings
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
+    abstract fun expenseDao(): ExpenseDao
 
     companion object {
         @Volatile
@@ -19,12 +20,15 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "app_database"
-                ).build()
+                )
+                    .fallbackToDestructiveMigration() // Use destructive migration
+                    .build()
                 INSTANCE = instance
                 instance
             }
         }
     }
 }
+
 
 

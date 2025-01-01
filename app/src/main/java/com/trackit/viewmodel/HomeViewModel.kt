@@ -5,41 +5,105 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.trackit.repository.AppRepository
+import kotlinx.coroutines.launch
 
 data class Transaction(
+    val id: Int,
     val title: String,
     val amount: Double,
     val date: String,
     val color: Color,
-    val category: String
+    val category: String,
+    val isExpense: Boolean // To differentiate between income and expense
 )
 
-class HomeViewModel : ViewModel() {
+class HomeViewModel(
+    private val repository: AppRepository,
+    private val userSessionViewModel: UserSessionViewModel
+) : ViewModel() {
+
+    // Observing user ID from session
+    val userId = userSessionViewModel.userId
+
+    // State variables
     var userName by mutableStateOf("John Doe")
         private set
 
-    var transactions by mutableStateOf(
-        listOf(
-            Transaction("Ice Cream", -10.00, "Today", Color(0xFFFFCCCB), "Food"),
-            Transaction("Super Market", -80.00, "Today", Color(0xFFAECBFA), "Shopping"),
-            Transaction("Cinema", -20.00, "Yesterday", Color(0xFFF8BBE8), "Entertainment"),
-            Transaction("Freelance Work", 1200.00, "This Month", Color(0xFFB8E4C9), "Work")
-        )
-    )
+    var transactions by mutableStateOf(emptyList<Transaction>())
         private set
 
-    val balance: Double
-        get() = transactions.sumOf { it.amount }
+    val income: Double = 0.0 // Static income for now must be changed !!
 
-    val income: Double
-        get() = transactions.filter { it.amount > 0 }.sumOf { it.amount }
+    val balance: Double
+        get() = income - expenses
 
     val expenses: Double
-        get() = transactions.filter { it.amount < 0 }.sumOf { -it.amount }
+        get() = transactions.filter { it.isExpense }.sumOf { it.amount }
 
+    init {
+        fetchUserData()
+        fetchTransactions()
+    }
 
-    fun addTransaction(transaction: Transaction) {
-        transactions = transactions + transaction
+    /*
+     * Fetch user-specific data such as name or profile information.
+     */
+    private fun fetchUserData() {
+        viewModelScope.launch {
+            try {
+                val currentUserId = userId.value
+                if (currentUserId != null) {
+                    val user = repository.findUserById(currentUserId)
+                    userName = user?.fullName ?: "John Doe" // Fallback name
+                }
+            } catch (e: Exception) {
+                userName = "Unknown User"
+            }
+        }
+    }
+
+    /*
+     * Fetch transactions for the logged-in user from the database.
+     */
+    private fun fetchTransactions() {
+        viewModelScope.launch {
+            try {
+                val currentUserId = userId.value
+                if (currentUserId != null) {
+                    val expenses = repository.getExpensesForUser(currentUserId)
+                    transactions = expenses.map { expense ->
+                        Transaction(
+                            id = expense.id,
+                            title = expense.description,
+                            amount = expense.amount,
+                            date = expense.date,
+                            color = getColorByCategory(expense.category),
+                            category = expense.category,
+                            isExpense = true // Mark all fetched data as expenses
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                transactions = emptyList()
+            }
+        }
+    }
+
+    /*
+     * Helper function to determine color based on the expense category.
+     */
+    private fun getColorByCategory(category: String): Color {
+        return when (category) {
+            "Food" -> Color(0xFFFFE5E5)            // Pale Red
+            "Supermarket" -> Color(0xFFFFF9E6)     // Pale Yellow
+            "Shopping" -> Color(0xFFE6F0FF)        // Pale Blue
+            "Fun" -> Color(0xFFFDE6F2)             // Pale Pink
+            "Others" -> Color(0xFFE6E6E6)          // Pale Gray
+            "Income" -> Color(0xFFE6FFE6)          // Pale Green
+            else -> Color(0xFFD9D9D9)              // Default Pale Gray
+        }
     }
 
 }
