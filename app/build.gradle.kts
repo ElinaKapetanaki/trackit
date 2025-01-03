@@ -58,7 +58,8 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.litert.support.api)
     implementation("androidx.room:room-runtime:2.6.1")
-    implementation("androidx.room:room-ktx:2.6.1")// Required for coroutines
+    implementation("androidx.room:room-ktx:2.6.1")
+    implementation(libs.androidx.appcompat)// Required for coroutines
     kapt("androidx.room:room-compiler:2.6.1")
     implementation("org.mindrot:jbcrypt:0.4")
     testImplementation(libs.junit)

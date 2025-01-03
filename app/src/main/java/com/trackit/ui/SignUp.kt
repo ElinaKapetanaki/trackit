@@ -1,5 +1,6 @@
 package com.trackit.ui
 
+import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -10,112 +11,125 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.trackit.VideoActivity
 import com.trackit.ui.components.BlackButton
 import com.trackit.ui.components.LinkedText
 import com.trackit.ui.components.StyledTextField
 import com.trackit.ui.theme.SignUpActivityTheme
+import com.trackit.viewmodel.AppViewModelProvider
+import com.trackit.viewmodel.SignUpViewModel
+
 
 @Composable
 fun SignupScreen(
     onSignupComplete: () -> Unit,
-    onLogInClick: () -> Unit
+    onLogInClick: () -> Unit,
+    signUpViewModel: SignUpViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val context = LocalContext.current
-
-    // Local state to hold form inputs
-    var fullName by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var confirmPassword by remember { mutableStateOf("") }
+    val signUpState by signUpViewModel.signUpState.collectAsState()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF5F5F5)) // Light background
+            .background(Color(0xFFF5F5F5)) // Background color
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Title
         Text(
             text = "Create Your Account",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = Color.Black
         )
+
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Full Name Field
         StyledTextField(
-            value = fullName,
-            onValueChange = { fullName = it },
+            value = signUpState.fullName,
+            onValueChange = { signUpViewModel.updateFullName(it) },
             label = "Full Name"
         )
 
-        // Email Field
         StyledTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = "Email",
-            keyboardType = KeyboardType.Email
+            value = signUpState.email,
+            onValueChange = { signUpViewModel.updateEmail(it) },
+            label = "Email"
         )
 
-        // Username Field
         StyledTextField(
-            value = username,
-            onValueChange = { username = it },
+            value = signUpState.username,
+            onValueChange = { signUpViewModel.updateUsername(it) },
             label = "Username"
         )
 
-        // Password Field
         StyledTextField(
-            value = password,
-            onValueChange = { password = it },
+            value = signUpState.password,
+            onValueChange = { signUpViewModel.updatePassword(it) },
             label = "Password",
             isPassword = true
         )
 
-        // Confirm Password Field
         StyledTextField(
-            value = confirmPassword,
-            onValueChange = { confirmPassword = it },
+            value = signUpState.confirmPassword,
+            onValueChange = { signUpViewModel.updateConfirmPassword(it) },
             label = "Confirm Password",
             isPassword = true
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Sign-Up Button
-        BlackButton(text = "Sign Up", onClick = {
-            when {
-                fullName.isEmpty() || email.isEmpty() || username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty() -> {
+        BlackButton(
+            text = "Sign Up",
+            onClick = {
+                if (signUpState.fullName.isEmpty() ||
+                    signUpState.email.isEmpty() ||
+                    signUpState.username.isEmpty() ||
+                    signUpState.password.isEmpty() ||
+                    signUpState.confirmPassword.isEmpty()
+                ) {
                     Toast.makeText(context, "Please fill out all fields", Toast.LENGTH_SHORT).show()
-                }
-                password != confirmPassword -> {
+                } else if (signUpState.password != signUpState.confirmPassword) {
                     Toast.makeText(context, "Passwords do not match", Toast.LENGTH_SHORT).show()
-                }
-                else -> {
-                    Toast.makeText(context, "Signup successful!", Toast.LENGTH_SHORT).show()
-                    onSignupComplete()
+                } else {
+                    // Εκκίνηση της λογικής εγγραφής
+                    signUpViewModel.signUp { isSuccess ->
+                        if (isSuccess) {
+                            Toast.makeText(context, "Signup Successful!", Toast.LENGTH_SHORT).show()
+
+                            // Εκκίνηση του VideoActivity
+                            val intent = Intent(context, VideoActivity::class.java)
+                            context.startActivity(intent)
+
+                            // Κλήση του callback για ολοκλήρωση
+                            onSignupComplete()
+                        } else {
+                            Toast.makeText(
+                                context,
+                                signUpState.errorMessage ?: "Sign up failed",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
                 }
             }
-        })
+        )
 
-        // Login Redirect Button
+        Spacer(modifier = Modifier.height(8.dp))
+
         LinkedText(
             staticText = "Already have an account?",
             clickableText = "Login",
@@ -124,13 +138,11 @@ fun SignupScreen(
     }
 }
 
+
 @Preview(showBackground = true)
 @Composable
 fun SignupScreenPreview() {
     SignUpActivityTheme {
-        SignupScreen(
-            onSignupComplete = {},
-            onLogInClick = {}
-        )
+        SignupScreen(onSignupComplete = {}, onLogInClick = {})
     }
 }
