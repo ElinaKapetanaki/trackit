@@ -3,15 +3,9 @@ package com.trackit.ui
 import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -31,7 +25,6 @@ import com.trackit.ui.theme.SignUpActivityTheme
 import com.trackit.viewmodel.AppViewModelProvider
 import com.trackit.viewmodel.SignUpViewModel
 
-
 @Composable
 fun SignupScreen(
     onSignupComplete: () -> Unit,
@@ -44,7 +37,7 @@ fun SignupScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF5F5F5)) // Background color
+            .background(Color(0xFFF5F5F5))
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -95,34 +88,18 @@ fun SignupScreen(
         BlackButton(
             text = "Sign Up",
             onClick = {
-                if (signUpState.fullName.isEmpty() ||
-                    signUpState.email.isEmpty() ||
-                    signUpState.username.isEmpty() ||
-                    signUpState.password.isEmpty() ||
-                    signUpState.confirmPassword.isEmpty()
-                ) {
-                    Toast.makeText(context, "Please fill out all fields", Toast.LENGTH_SHORT).show()
-                } else if (signUpState.password != signUpState.confirmPassword) {
-                    Toast.makeText(context, "Passwords do not match", Toast.LENGTH_SHORT).show()
-                } else {
-                    // Εκκίνηση της λογικής εγγραφής
-                    signUpViewModel.signUp { isSuccess ->
-                        if (isSuccess) {
-                            Toast.makeText(context, "Signup Successful!", Toast.LENGTH_SHORT).show()
+                signUpViewModel.signUp { isSuccess, errorMessage ->
+                    if (isSuccess) {
+                        Toast.makeText(context, "Signup Successful!", Toast.LENGTH_SHORT).show()
 
-                            // Εκκίνηση του VideoActivity
-                            val intent = Intent(context, VideoActivity::class.java)
-                            context.startActivity(intent)
+                        // Εκκίνηση του VideoActivity
+                        val intent = Intent(context, VideoActivity::class.java)
+                        context.startActivity(intent)
 
-                            // Κλήση του callback για ολοκλήρωση
-                            onSignupComplete()
-                        } else {
-                            Toast.makeText(
-                                context,
-                                signUpState.errorMessage ?: "Sign up failed",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
+                        // Κλήση του callback για ολοκλήρωση
+                        onSignupComplete()
+                    } else {
+                        Toast.makeText(context, errorMessage ?: "Sign up failed", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
@@ -137,7 +114,6 @@ fun SignupScreen(
         )
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable

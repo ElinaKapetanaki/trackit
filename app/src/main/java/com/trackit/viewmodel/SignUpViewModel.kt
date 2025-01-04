@@ -43,17 +43,15 @@ class SignUpViewModel(
     }
 
     // Perform sign-up
-    fun signUp(onResult: (Boolean) -> Unit) {
+    fun signUp(onResult: (Boolean, String?) -> Unit) {
         val state = _signUpState.value
         if (state.fullName.isBlank() || state.email.isBlank() || state.username.isBlank() || state.password.isBlank() || state.confirmPassword.isBlank()) {
-            _signUpState.update { it.copy(errorMessage = "All fields must be filled out") }
-            onResult(false)
+            onResult(false, "All fields must be filled out")
             return
         }
 
         if (state.password != state.confirmPassword) {
-            _signUpState.update { it.copy(errorMessage = "Passwords do not match") }
-            onResult(false)
+            onResult(false, "Passwords do not match")
             return
         }
 
@@ -67,12 +65,10 @@ class SignUpViewModel(
         viewModelScope.launch {
             val userExists = repository.findUserByUsername(state.username) != null
             if (userExists) {
-                _signUpState.update { it.copy(errorMessage = "Username already exists") }
-                onResult(false)
+                onResult(false, "Username already exists")
             } else {
                 repository.insertUser(newUser)
-                _signUpState.update { it.copy(isSuccess = true, errorMessage = null) }
-                onResult(true)
+                onResult(true, null)
             }
         }
     }
