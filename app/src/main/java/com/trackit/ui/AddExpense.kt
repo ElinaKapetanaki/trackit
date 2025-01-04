@@ -101,7 +101,12 @@ fun AddExpenseScreen(
                             Spacer(modifier = Modifier.width(8.dp))
                             TextField(
                                 value = amount,
-                                onValueChange = { expenseViewModel.updateAmount(it) },
+                                onValueChange = { input ->
+                                    // Επιτρέπουμε μόνο αριθμούς και δεκαδικά
+                                    if (input.matches(Regex("^\\d*\\.?\\d*\$"))) {
+                                        expenseViewModel.updateAmount(input)
+                                    }
+                                },
                                 placeholder = {
                                     Text("50", color = Color.LightGray, fontSize = 28.sp, fontWeight = FontWeight.Bold)
                                 },
@@ -117,6 +122,7 @@ fun AddExpenseScreen(
                                 modifier = Modifier.weight(1f),
                                 singleLine = true
                             )
+
                         }
                         Spacer(modifier = Modifier.height(24.dp))
 

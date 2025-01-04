@@ -2,27 +2,11 @@ package com.trackit.ui
 
 import android.app.DatePickerDialog
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,45 +15,53 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.trackit.ui.components.BlackButton
 import com.trackit.ui.components.PageTopBar
-import com.trackit.viewmodel.AddIncomeViewModel
+import com.trackit.viewmodel.AppViewModelProvider
+import com.trackit.viewmodel.IncomeViewModel
+import kotlinx.coroutines.launch
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddIncomeScreen(
-    viewModel: AddIncomeViewModel = viewModel(),
     onSaveClick: () -> Unit,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    incomeViewModel: IncomeViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    // Triggering the DatePickerDialog
+    // Παρακολούθηση καταστάσεων από το ViewModel
+    val amount by incomeViewModel.amount.collectAsState()
+    val description by incomeViewModel.description.collectAsState()
+    val date by incomeViewModel.date.collectAsState()
+
+    // DatePickerDialog setup
     val datePickerDialog = remember {
         DatePickerDialog(
             context,
             { _, year, month, dayOfMonth ->
                 val formattedDate = String.format("%02d/%02d/%04d", dayOfMonth, month + 1, year)
-                viewModel.onDateSelected(formattedDate)
+                incomeViewModel.updateDate(formattedDate)
             },
-            viewModel.calendar.get(Calendar.YEAR),
-            viewModel.calendar.get(Calendar.MONTH),
-            viewModel.calendar.get(Calendar.DAY_OF_MONTH)
+            Calendar.getInstance().get(Calendar.YEAR),
+            Calendar.getInstance().get(Calendar.MONTH),
+            Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
         )
     }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             PageTopBar(
-                title = "Add income",
+                title = "Add Income",
                 onBackClick = onBackClick
             )
-
         },
         content = { innerPadding ->
             Box(
@@ -83,7 +75,6 @@ fun AddIncomeScreen(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
-                    // Main Form Content
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -103,16 +94,15 @@ fun AddIncomeScreen(
                             Text("€", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Color.White)
                             Spacer(modifier = Modifier.width(8.dp))
                             TextField(
-                                value = viewModel.amount,
-                                onValueChange = { viewModel.onAmountChange(it) },
-                                placeholder = {
-                                    Text("1000", color = Color.LightGray, fontSize = 28.sp, fontWeight = FontWeight.Bold)
+                                value = amount,
+                                onValueChange = {
+                                    // Επιτρέπουμε μόνο αριθμούς και δεκαδικά
+                                    if (it.matches(Regex("^\\d*\\.?\\d*\$"))) {
+                                        incomeViewModel.updateAmount(it)
+                                    }
                                 },
-                                textStyle = TextStyle(
-                                    fontSize = 28.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color.White
-                                ),
+                                placeholder = { Text("100", color = Color.LightGray) },
+                                textStyle = TextStyle(fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Color.White),
                                 colors = TextFieldDefaults.textFieldColors(
                                     containerColor = Color.Transparent,
                                     focusedIndicatorColor = Color.LightGray,
@@ -127,6 +117,23 @@ fun AddIncomeScreen(
                         }
                         Spacer(modifier = Modifier.height(24.dp))
 
+                        // Description Input
+                        Text("Description", fontSize = 16.sp, fontWeight = FontWeight.Medium, color = Color.White)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        TextField(
+                            value = description,
+                            onValueChange = { incomeViewModel.updateDescription(it) },
+                            placeholder = { Text("Salary payment", color = Color.LightGray) },
+                            textStyle = TextStyle(fontSize = 16.sp, color = Color.White),
+                            colors = TextFieldDefaults.textFieldColors(
+                                containerColor = Color.Transparent,
+                                focusedIndicatorColor = Color.LightGray,
+                                unfocusedIndicatorColor = Color.Gray
+                            ),
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Spacer(modifier = Modifier.height(24.dp))
+
                         // Date Picker
                         Text("Date", fontSize = 16.sp, fontWeight = FontWeight.Medium, color = Color.White)
                         Spacer(modifier = Modifier.height(8.dp))
@@ -135,7 +142,7 @@ fun AddIncomeScreen(
                             modifier = Modifier.fillMaxWidth(),
                             colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray)
                         ) {
-                            Text(viewModel.selectedDate, color = Color.White, fontSize = 16.sp)
+                            Text(date, color = Color.White, fontSize = 16.sp)
                         }
                         Spacer(modifier = Modifier.height(16.dp))
                     }
@@ -147,22 +154,45 @@ fun AddIncomeScreen(
                     ) {
                         BlackButton(
                             text = "Save",
-                            onClick = {viewModel.saveIncome()
-                                onSaveClick()},
+                            onClick = {
+                                coroutineScope.launch {
+                                    when {
+                                        amount.isBlank() -> {
+                                            snackbarHostState.showSnackbar("Amount cannot be empty.")
+                                        }
+                                        amount.toDoubleOrNull() == null -> {
+                                            snackbarHostState.showSnackbar("Please enter a valid numeric amount.")
+                                        }
+                                        description.isBlank() -> {
+                                            snackbarHostState.showSnackbar("Description cannot be empty.")
+                                        }
+                                        date == "Select Date" -> {
+                                            snackbarHostState.showSnackbar("Please select a valid date.")
+                                        }
+                                        else -> {
+                                            // Κλήση της saveIncome μέσα σε coroutineScope
+                                            incomeViewModel.saveIncome(
+                                                onSuccess = {
+                                                    coroutineScope.launch {
+                                                        snackbarHostState.showSnackbar("Income saved successfully!")
+                                                        onSaveClick()
+                                                    }
+                                                },
+                                                onError = { message ->
+                                                    coroutineScope.launch {
+                                                        snackbarHostState.showSnackbar(message)
+                                                    }
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+                            },
                             cornerRadius = 20
                         )
                     }
                 }
             }
         }
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun AddIncomeScreenPreview() {
-    AddIncomeScreen(
-        onSaveClick = { },
-        onBackClick = { }
     )
 }

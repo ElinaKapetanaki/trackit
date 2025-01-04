@@ -20,6 +20,10 @@ class AppViewModelFactory(private val repository: AppRepository,private val user
                 @Suppress("UNCHECKED_CAST")
                 ExpenseViewModel(repository, userSessionViewModel) as T
             }
+            modelClass.isAssignableFrom(IncomeViewModel::class.java) -> {
+                @Suppress("UNCHECKED_CAST")
+                IncomeViewModel(repository, userSessionViewModel) as T
+            }
             modelClass.isAssignableFrom(HomeViewModel::class.java) -> {
                 @Suppress("UNCHECKED_CAST")
                 HomeViewModel(repository, userSessionViewModel) as T

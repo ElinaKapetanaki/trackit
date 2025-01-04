@@ -1,17 +1,7 @@
 package com.trackit.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,7 +24,6 @@ import com.trackit.viewmodel.HomeViewModel
 import com.trackit.viewmodel.Transaction
 import com.trackit.viewmodel.AppViewModelProvider
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
@@ -47,8 +36,9 @@ fun HomeScreen(
     onEditProfileClick: () -> Unit
 ) {
     // Observing data from the ViewModel
-    val transactions = viewModel.transactions
+    val transactions = viewModel.transactions + viewModel.incomeList // Combine expenses and incomes
     val balance = viewModel.balance
+    val income = viewModel.income
     val expenses = viewModel.expenses
     val userName = viewModel.userName
 
@@ -106,7 +96,7 @@ fun HomeScreen(
                         Spacer(modifier = Modifier.height(16.dp))
                         BalanceCard(
                             balance = balance,
-                            income = viewModel.income,
+                            income = income,
                             expenses = expenses
                         )
                     }
@@ -143,7 +133,6 @@ fun EmptyState() {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
         Text(
             text = "You don’t have any transactions yet.",
             fontSize = 16.sp,
@@ -197,7 +186,6 @@ fun TransactionItem(transaction: Transaction) {
         )
     }
 }
-
 
 @Composable
 fun BalanceCard(balance: Double, income: Double, expenses: Double) {
@@ -278,4 +266,3 @@ fun HomeScreenPreview() {
         )
     }
 }
-

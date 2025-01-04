@@ -5,10 +5,11 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [User::class, Expense::class], version = 3, exportSchema = false) // exportSchema = false to remove warnings
+@Database(entities = [User::class, Expense::class, Income::class], version = 4, exportSchema = false) // Updated version
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
     abstract fun expenseDao(): ExpenseDao
+    abstract fun incomeDao(): IncomeDao // Added IncomeDao
 
     companion object {
         @Volatile
@@ -29,6 +30,3 @@ abstract class AppDatabase : RoomDatabase() {
         }
     }
 }
-
-
-

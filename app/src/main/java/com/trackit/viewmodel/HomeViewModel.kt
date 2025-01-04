@@ -34,7 +34,11 @@ class HomeViewModel(
     var transactions by mutableStateOf(emptyList<Transaction>())
         private set
 
-    val income: Double = 0.0 // Static income for now must be changed !!
+    var incomeList by mutableStateOf(emptyList<Transaction>())
+        private set
+
+    val income: Double
+        get() = incomeList.sumOf { it.amount }
 
     val balance: Double
         get() = income - expenses
@@ -45,6 +49,7 @@ class HomeViewModel(
     init {
         fetchUserData()
         fetchTransactions()
+        fetchIncome()
     }
 
     /*
@@ -92,7 +97,34 @@ class HomeViewModel(
     }
 
     /*
-     * Helper function to determine color based on the expense category.
+     * Fetch income for the logged-in user from the database.
+     */
+    private fun fetchIncome() {
+        viewModelScope.launch {
+            try {
+                val currentUserId = userId.value
+                if (currentUserId != null) {
+                    val incomes = repository.getIncomeForUser(currentUserId)
+                    incomeList = incomes.map { income ->
+                        Transaction(
+                            id = income.id,
+                            title = income.description,
+                            amount = income.amount,
+                            date = income.date,
+                            color = getColorByCategory("Income"),
+                            category = "Income",
+                            isExpense = false // Mark all fetched data as income
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                incomeList = emptyList()
+            }
+        }
+    }
+
+    /*
+     * Helper function to determine color based on the category.
      */
     private fun getColorByCategory(category: String): Color {
         return when (category) {
@@ -105,5 +137,4 @@ class HomeViewModel(
             else -> Color(0xFFD9D9D9)              // Default Pale Gray
         }
     }
-
 }
