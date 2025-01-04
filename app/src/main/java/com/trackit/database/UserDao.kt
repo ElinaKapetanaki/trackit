@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+
 @Dao
 interface UserDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -21,4 +22,19 @@ interface UserDao {
     @Query("DELETE FROM User WHERE emailOrUsername = :emailOrUsername")
     suspend fun deleteUserByEmail(emailOrUsername: String)
 
+    // Update user's full name
+    @Query("UPDATE User SET fullName = :newFullName WHERE id = :userId")
+    suspend fun updateFullName(userId: Int, newFullName: String)
+
+    // Update user's username
+    @Query("UPDATE User SET emailOrUsername = :newUsername WHERE id = :userId")
+    suspend fun updateUsername(userId: Int, newUsername: String)
+
+    // Update user's password
+    @Query("UPDATE User SET passwordHash = :newPassword WHERE id = :userId")
+    suspend fun updatePassword(userId: Int, newPassword: String)
+
+    // **ΝΕΟ** Update user's profile image URI
+    @Query("UPDATE User SET profileImageUri = :profileImageUri WHERE id = :userId")
+    suspend fun updateProfileImage(userId: Int, profileImageUri: String?)
 }

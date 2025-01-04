@@ -37,6 +37,9 @@ class HomeViewModel(
     var incomeList by mutableStateOf(emptyList<Transaction>())
         private set
 
+    var profileImageUri by mutableStateOf<String?>(null)
+        private set
+
     val income: Double
         get() = incomeList.sumOf { it.amount }
 
@@ -50,6 +53,7 @@ class HomeViewModel(
         fetchUserData()
         fetchTransactions()
         fetchIncome()
+        fetchUserProfileImage()
     }
 
     /*
@@ -119,6 +123,23 @@ class HomeViewModel(
                 }
             } catch (e: Exception) {
                 incomeList = emptyList()
+            }
+        }
+    }
+
+    /*
+     * Fetch the user's profile image URI.
+     */
+    private fun fetchUserProfileImage() {
+        viewModelScope.launch {
+            try {
+                val currentUserId = userId.value
+                if (currentUserId != null) {
+                    val user = repository.findUserById(currentUserId)
+                    profileImageUri = user?.profileImageUri // Get the image URI
+                }
+            } catch (e: Exception) {
+                profileImageUri = null
             }
         }
     }

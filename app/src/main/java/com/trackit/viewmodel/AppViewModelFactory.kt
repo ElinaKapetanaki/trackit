@@ -16,6 +16,10 @@ class AppViewModelFactory(private val repository: AppRepository,private val user
                 @Suppress("UNCHECKED_CAST")
                 SignUpViewModel(repository) as T
             }
+            modelClass.isAssignableFrom(EditProfileViewModel::class.java) -> {
+                @Suppress("UNCHECKED_CAST")
+                EditProfileViewModel(repository, userSessionViewModel) as T
+            }
             modelClass.isAssignableFrom(ExpenseViewModel::class.java) -> {
                 @Suppress("UNCHECKED_CAST")
                 ExpenseViewModel(repository, userSessionViewModel) as T

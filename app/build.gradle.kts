@@ -62,6 +62,9 @@ dependencies {
     implementation(libs.androidx.appcompat)// Required for coroutines
     kapt("androidx.room:room-compiler:2.6.1")
     implementation("org.mindrot:jbcrypt:0.4")
+    implementation("androidx.activity:activity-ktx:1.6.1")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
+    implementation("io.coil-kt:coil-compose:2.2.2") // Για την εμφάνιση εικόνας μέσω URI
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

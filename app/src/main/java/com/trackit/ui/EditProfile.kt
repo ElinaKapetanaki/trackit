@@ -1,50 +1,53 @@
 package com.trackit.ui
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
 import com.trackit.ui.components.BlackButton
 import com.trackit.ui.components.BottomNavBar
 import com.trackit.ui.components.StyledTextField
+import com.trackit.viewmodel.AppViewModelProvider
 import com.trackit.viewmodel.EditProfileViewModel
 
 @Composable
 fun EditProfileScreen(
-    viewModel: EditProfileViewModel = viewModel(),
     onHomeClick: () -> Unit,
     onChartsClick: () -> Unit,
     onAddButtonClick: () -> Unit,
     onExchangeClick: () -> Unit,
-    onEditProfileClick: () -> Unit
+    onEditProfileClick: () -> Unit,
+    viewModel: EditProfileViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
-    val profileData = viewModel.profileData
+    val profileState by viewModel.profileState.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        selectedImageUri = uri
+        viewModel.updateProfileImage(uri.toString())
+    }
 
     Scaffold(
         bottomBar = {
@@ -63,6 +66,7 @@ fun EditProfileScreen(
                     .padding(innerPadding)
                     .background(Color(0xFFF5F5F5))
             ) {
+                // Header
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -85,25 +89,37 @@ fun EditProfileScreen(
                             modifier = Modifier
                                 .size(90.dp)
                                 .clip(CircleShape)
-                                .background(Color.Gray),
+                                .background(Color.Gray)
+                                .clickable { launcher.launch("image/*") },
                             contentAlignment = Alignment.Center
                         ) {
-                            Text("Your\nPhoto", color = Color.White, fontSize = 14.sp)
+                            if (selectedImageUri != null) {
+                                AsyncImage(
+                                    model = selectedImageUri,
+                                    contentDescription = "Profile Picture",
+                                    modifier = Modifier.clip(CircleShape),
+                                    contentScale = ContentScale.Crop
+                                )
+                            } else {
+                                Text("Your\nPhoto", color = Color.White, fontSize = 14.sp)
+                            }
                         }
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = profileData.fullName.value,
+                            text = profileState.fullName,
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.White
                         )
                         Text(
-                            text = "your_email@aueb.aueb",
+                            text = profileState.username,
                             fontSize = 14.sp,
                             color = Color.LightGray
                         )
                     }
                 }
+
+                // Form
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -115,41 +131,29 @@ fun EditProfileScreen(
 
                     StyledTextField(
                         label = "Full Name",
-                        value = profileData.fullName.value,
+                        value = profileState.fullName,
                         onValueChange = viewModel::updateFullName
                     )
                     StyledTextField(
                         label = "Username",
-                        value = profileData.username.value,
+                        value = profileState.username,
                         onValueChange = viewModel::updateUsername
                     )
                     StyledTextField(
                         label = "New Password",
-                        value = profileData.password.value,
+                        value = profileState.password,
                         onValueChange = viewModel::updatePassword,
                         isPassword = true
                     )
-                    /*StyledTextField(
-                        label = "Fixed Income (€)",
-                        value = profileData.fixedIncome.value,
-                        onValueChange = viewModel::updateFixedIncome,
-                        isNumeric = true
-                    )
-                    StyledTextField(
-                        label = "Fixed Expenses (€)",
-                        value = profileData.fixedExpenses.value,
-                        onValueChange = viewModel::updateFixedExpenses,
-                        isNumeric = true
-                    )*/
 
                     Spacer(modifier = Modifier.height(10.dp))
 
                     BlackButton(text = "Save", onClick = {
-                        viewModel.saveChanges {
-                            showDialog = true
-
-                        }}
-                    )
+                        viewModel.saveChanges(
+                            onSaveComplete = { showDialog = true },
+                            onError = { message -> errorMessage = message }
+                        )
+                    })
                 }
             }
         }
@@ -162,6 +166,20 @@ fun EditProfileScreen(
             text = { Text("Changes have been saved!") },
             confirmButton = {
                 TextButton(onClick = { showDialog = false }) {
+                    Text("OK", color = Color.Black)
+                }
+            },
+            containerColor = Color.White
+        )
+    }
+
+    if (errorMessage != null) {
+        AlertDialog(
+            onDismissRequest = { errorMessage = null },
+            title = { Text("Error") },
+            text = { Text(errorMessage!!) },
+            confirmButton = {
+                TextButton(onClick = { errorMessage = null }) {
                     Text("OK", color = Color.Black)
                 }
             },

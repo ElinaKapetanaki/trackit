@@ -8,15 +8,20 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.trackit.ui.components.BottomNavBar
 import com.trackit.ui.components.PageTopBar
 import com.trackit.ui.theme.SignUpActivityTheme
@@ -41,6 +46,7 @@ fun HomeScreen(
     val income = viewModel.income
     val expenses = viewModel.expenses
     val userName = viewModel.userName
+    val profileImageUri = viewModel.profileImageUri
 
     Scaffold(
         topBar = {
@@ -77,6 +83,9 @@ fun HomeScreen(
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                 }
+
+                // Profile Image on Top-Right
+                UserProfileImage(profileImageUri)
 
                 // Balance and User Info
                 Box(
@@ -123,6 +132,45 @@ fun HomeScreen(
         }
     )
 }
+
+@Composable
+fun UserProfileImage(imageUri: String?) {
+    Box(
+        modifier = Modifier
+            .size(80.dp)
+            .clip(CircleShape)
+            .background(Color.Gray)
+            .padding(16.dp) // Αν χρειάζεσαι περιθώρια γύρω από την εικόνα
+    ) {
+        // Εικόνα προφίλ αν υπάρχει
+        if (imageUri != null) {
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(imageUri)
+                    .crossfade(true)
+                    .build(),
+                contentDescription = "Profile Picture",
+                modifier = Modifier.fillMaxSize()
+            )
+        } else {
+            // Placeholder κείμενο αν δεν υπάρχει εικόνα
+            Text("Your\nPhoto", color = Color.White, fontSize = 14.sp)
+        }
+
+        // Κόκκινο dot στην επάνω δεξιά γωνία
+        Box(
+            modifier = Modifier
+                .size(16.dp)
+                .clip(CircleShape)
+                .background(Color.Red)
+                .align(Alignment.TopEnd) // Τοποθετούμε το dot στην επάνω δεξιά γωνία
+                .padding(4.dp) // Ρυθμίστε την απόσταση αν χρειάζεται
+        )
+    }
+}
+
+
+
 
 @Composable
 fun EmptyState() {

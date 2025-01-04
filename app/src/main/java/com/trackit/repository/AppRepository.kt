@@ -10,6 +10,8 @@ interface AppRepository {
     suspend fun insertUser(user: User): Long                              // Εισαγωγή χρήστη
     suspend fun findUserByUsername(emailOrUsername: String): User?        // Εύρεση χρήστη
     suspend fun findUserById(userId: Int): User?
+    suspend fun updateUserProfile(userId: Int, fullName: String, username: String, passwordHash: String?)
+    suspend fun updateUserPhoto(userId: Int, photoUri: String)            // Νέα μέθοδος για την εικόνα
 
     // Expenses
     suspend fun insertExpense(userId: Int, amount: Double, category: String, description: String, date: String)

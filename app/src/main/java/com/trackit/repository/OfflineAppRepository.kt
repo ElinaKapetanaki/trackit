@@ -24,6 +24,23 @@ class OfflineAppRepository(private val database: AppDatabase) : AppRepository {
         return database.userDao().findUserById(userId)
     }
 
+    override suspend fun updateUserProfile(userId: Int, fullName: String, username: String, passwordHash: String?) {
+        val user = database.userDao().findUserById(userId)
+            ?: throw IllegalArgumentException("User with ID $userId does not exist.")
+
+        val updatedUser = user.copy(
+            fullName = fullName,
+            emailOrUsername = username,
+            passwordHash = passwordHash ?: user.passwordHash
+        )
+
+        database.userDao().insertUser(updatedUser)
+    }
+
+    override suspend fun updateUserPhoto(userId: Int, photoUri: String) {
+        database.userDao().updateProfileImage(userId, photoUri)
+    }
+
     // Expenses
     override suspend fun insertExpense(userId: Int, amount: Double, category: String, description: String, date: String) {
         database.expenseDao().insertExpense(
