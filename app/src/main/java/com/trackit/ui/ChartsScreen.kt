@@ -1,13 +1,9 @@
 package com.trackit.ui
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,6 +23,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.trackit.ui.components.BottomNavBar
 import com.trackit.ui.components.PageTopBar
 import com.trackit.viewmodel.ChartsViewModel
+import com.trackit.viewmodel.ChartItem
+import com.trackit.viewmodel.AppViewModelProvider
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Legend
@@ -39,10 +37,7 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 
-/**
- * Το κύριο Composable (ChartsScreen) που παίρνει το ChartsViewModel
- * και δείχνει τρία γραφήματα σε μία LazyColumn.
- */
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChartsScreen(
@@ -51,10 +46,17 @@ fun ChartsScreen(
     onChartsClick: () -> Unit,
     onAddButtonClick: () -> Unit,
     onExchangeClick: () -> Unit,
-    onEditProfileClick: () -> Unit,
-    viewModel: ChartsViewModel = viewModel()
+    onEditProfileClick: () -> Unit
 ) {
-    // Παίρνουμε τη λίστα chartItems από το ViewModel
+    // Get the ViewModel with the Factory
+    val viewModel: ChartsViewModel = viewModel(
+        factory = AppViewModelProvider.Factory
+    )
+
+    // Fetch chart data from the ViewModel
+    viewModel.fetchChartData()
+
+    // Get chart items from the ViewModel
     val chartItems = viewModel.chartItems
 
     Scaffold(
@@ -81,7 +83,7 @@ fun ChartsScreen(
                 .background(Color(0xFFF5F5F5))
                 .padding(16.dp)
         ) {
-            // LazyColumn για scroll αν δεν χωράνε
+            // LazyColumn for scrollable content
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -112,8 +114,7 @@ fun ChartsScreen(
 }
 
 /**
- * Μία ενότητα γραφήματος: Τίτλος, περιγραφή, και ένα LineChart
- * σε μαύρο background, ύψος 250dp για να μη γεμίζει την οθόνη.
+ * A section for each chart, with title, description, and either a LineChart or BarChart.
  */
 @Composable
 fun CategoryChartSection(
@@ -157,9 +158,8 @@ fun CategoryChartSection(
     }
 }
 
-
 /**
- * To LineChartComposable (MPAndroidChart) που σχεδιάζει λευκή γραμμή σε μαύρο background.
+ * LineChart Composable using MPAndroidChart to display line chart on a black background.
  */
 @Composable
 fun LineChartComposable(
@@ -177,19 +177,20 @@ fun LineChartComposable(
                 setDrawGridBackground(false)
                 setPinchZoom(false)
                 animateX(1500)
-                setExtraOffsets(10f, 10f, 10f, 10f)
+                setExtraOffsets(15f, 20f, 15f, 20f) // Added extra offsets for better spacing
                 setBackgroundColor(android.graphics.Color.BLACK)
 
                 xAxis.apply {
-                    textSize = 14f
+                    textSize = 16f // Increased text size for axis labels
                     textColor = android.graphics.Color.WHITE
                     position = XAxis.XAxisPosition.BOTTOM
                     setDrawGridLines(false)
                     granularity = 1f
                     valueFormatter = IndexAxisValueFormatter(labels)
+                    setLabelCount(labels.size, false)
                 }
                 axisLeft.apply {
-                    textSize = 14f
+                    textSize = 16f
                     textColor = android.graphics.Color.WHITE
                     setDrawGridLines(false)
                 }
@@ -206,7 +207,6 @@ fun LineChartComposable(
             }
         },
         update = { chart ->
-            // Φτιάχνουμε τα entries από τα data
             val entries = data.mapIndexed { index, value ->
                 Entry(index.toFloat(), value)
             }
@@ -226,6 +226,9 @@ fun LineChartComposable(
     )
 }
 
+/**
+ * BarChart Composable using MPAndroidChart to display bar chart on a black background.
+ */
 @Composable
 fun BarChartComposable(
     data: List<Float>,
@@ -244,7 +247,7 @@ fun BarChartComposable(
                 setBackgroundColor(android.graphics.Color.BLACK)
 
                 xAxis.apply {
-                    textSize = 12f
+                    textSize = 16f // Increased text size for axis labels
                     textColor = android.graphics.Color.WHITE
                     position = XAxis.XAxisPosition.BOTTOM
                     setDrawGridLines(false)
@@ -252,7 +255,7 @@ fun BarChartComposable(
                     valueFormatter = IndexAxisValueFormatter(labels)
                 }
                 axisLeft.apply {
-                    textSize = 14f
+                    textSize = 16f
                     textColor = android.graphics.Color.WHITE
                     setDrawGridLines(false)
                 }
@@ -261,7 +264,9 @@ fun BarChartComposable(
             }
         },
         update = { chart ->
-            val entries = data.mapIndexed { index, value -> BarEntry(index.toFloat(), value) }
+            val entries = data.mapIndexed { index, value ->
+                BarEntry(index.toFloat(), value)
+            }
             val dataSet = BarDataSet(entries, "Categories").apply {
                 colors = listOf(
                     android.graphics.Color.parseColor("#FFCCCB"), // Food
@@ -271,15 +276,10 @@ fun BarChartComposable(
                     android.graphics.Color.parseColor("#FFD700")  // Other
                 )
                 valueTextColor = android.graphics.Color.WHITE
-                valueTextSize = 12f
+                valueTextSize = 16f // Increased text size for values
             }
             chart.data = BarData(dataSet)
             chart.invalidate()
         }
     )
 }
-
-
-
-
-

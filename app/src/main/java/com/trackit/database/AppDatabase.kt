@@ -5,11 +5,11 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [User::class, Expense::class, Income::class], version = 5, exportSchema = false) // Updated version
+@Database(entities = [User::class, Expense::class, Income::class], version = 5, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
     abstract fun expenseDao(): ExpenseDao
-    abstract fun incomeDao(): IncomeDao // Added IncomeDao
+    abstract fun incomeDao(): IncomeDao
 
     companion object {
         @Volatile
@@ -22,7 +22,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "app_database"
                 )
-                    .fallbackToDestructiveMigration() // Use destructive migration
+                    .fallbackToDestructiveMigration()
                     .build()
                 INSTANCE = instance
                 instance

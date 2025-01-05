@@ -23,6 +23,6 @@ object AppViewModelProvider {
             if (!::repository.isInitialized || !::userSessionViewModel.isInitialized) {
                 throw IllegalStateException("AppViewModelProvider is not initialized. Call initialize() first.")
             }
-            return AppViewModelFactory(repository, userSessionViewModel)
+            return AppViewModelFactory(repository, userSessionViewModel) // Περνάμε το userSessionViewModel
         }
 }
