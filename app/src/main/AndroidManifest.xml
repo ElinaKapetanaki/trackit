@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+    <!-- Permissions -->
+    <!-- Required for accessing media content on devices running Android 12 or below -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <!-- Optional: For newer devices (Android 13+), permissions for images, videos, etc. -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" tools:targetApi="33" />
+
+
 
     <application
         android:allowBackup="true"
@@ -12,6 +22,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TrackIt"
         tools:targetApi="31">
+
+
 
         <!-- Set MainActivity as the launcher activity -->
         <activity

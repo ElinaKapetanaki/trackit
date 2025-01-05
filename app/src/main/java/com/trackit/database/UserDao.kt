@@ -33,8 +33,4 @@ interface UserDao {
     // Update user's password
     @Query("UPDATE User SET passwordHash = :newPassword WHERE id = :userId")
     suspend fun updatePassword(userId: Int, newPassword: String)
-
-    // **ΝΕΟ** Update user's profile image URI
-    @Query("UPDATE User SET profileImageUri = :profileImageUri WHERE id = :userId")
-    suspend fun updateProfileImage(userId: Int, profileImageUri: String?)
 }

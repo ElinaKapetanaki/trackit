@@ -42,6 +42,10 @@ class SignUpViewModel(
         _signUpState.update { it.copy(confirmPassword = confirmPassword) }
     }
 
+    fun updateGender(gender: String) {
+        _signUpState.update { it.copy(gender = gender) }
+    }
+
     // Perform sign-up
     fun signUp(onResult: (Boolean, String?) -> Unit) {
         val state = _signUpState.value
@@ -59,7 +63,8 @@ class SignUpViewModel(
         val newUser = User(
             fullName = state.fullName,
             emailOrUsername = state.username,
-            passwordHash = hashedPassword
+            passwordHash = hashedPassword,
+            gender = state.gender
         )
 
         viewModelScope.launch {
@@ -80,6 +85,7 @@ data class SignUpState(
     val email: String = "",
     val username: String = "",
     val password: String = "",
+    val gender: String = "other",
     val confirmPassword: String = "",
     val isSuccess: Boolean = false,
     val errorMessage: String? = null

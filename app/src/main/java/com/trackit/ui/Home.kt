@@ -1,16 +1,26 @@
 package com.trackit.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import android.content.Context
+import java.io.InputStream
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -25,9 +35,20 @@ import coil.request.ImageRequest
 import com.trackit.ui.components.BottomNavBar
 import com.trackit.ui.components.PageTopBar
 import com.trackit.ui.theme.SignUpActivityTheme
+import com.trackit.viewmodel.AppViewModelProvider
 import com.trackit.viewmodel.HomeViewModel
 import com.trackit.viewmodel.Transaction
-import com.trackit.viewmodel.AppViewModelProvider
+import android.net.Uri
+import androidx.compose.ui.text.style.TextAlign
+import com.trackit.R
+import android.Manifest
+import android.content.Intent
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+
+import androidx.compose.runtime.*
+import androidx.compose.ui.res.painterResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,7 +67,8 @@ fun HomeScreen(
     val income = viewModel.income
     val expenses = viewModel.expenses
     val userName = viewModel.userName
-    val profileImageUri = viewModel.profileImageUri
+    val profileImageDrawable = viewModel.profileImageDrawable
+
 
     Scaffold(
         topBar = {
@@ -84,9 +106,6 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(16.dp))
                 }
 
-                // Profile Image on Top-Right
-                UserProfileImage(profileImageUri)
-
                 // Balance and User Info
                 Box(
                     modifier = Modifier
@@ -97,11 +116,36 @@ fun HomeScreen(
                         .padding(16.dp)
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        WelcomeHeader(
-                            userName = userName,
-                            textColor = Color.White,
-                            iconTint = Color.White
-                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            // Profile Picture
+                            Box(
+                                modifier = Modifier
+                                    .size(50.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.Gray),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                AsyncImage(
+                                    model = profileImageDrawable,
+                                    contentDescription = "Profile Picture",
+                                    modifier = Modifier.fillMaxSize(),
+                                    placeholder = painterResource(id = R.drawable.placeholder),
+                                    error = painterResource(id = R.drawable.error)
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.width(16.dp)) // Space between the image and welcome text
+
+                            // WelcomeHeader
+                            WelcomeHeader(
+                                userName = userName,
+                                textColor = Color.White,
+                                iconTint = Color.White
+                            )
+                        }
                         Spacer(modifier = Modifier.height(16.dp))
                         BalanceCard(
                             balance = balance,
@@ -132,43 +176,6 @@ fun HomeScreen(
         }
     )
 }
-
-@Composable
-fun UserProfileImage(imageUri: String?) {
-    Box(
-        modifier = Modifier
-            .size(80.dp)
-            .clip(CircleShape)
-            .background(Color.Gray)
-            .padding(16.dp) // Αν χρειάζεσαι περιθώρια γύρω από την εικόνα
-    ) {
-        // Εικόνα προφίλ αν υπάρχει
-        if (imageUri != null) {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(imageUri)
-                    .crossfade(true)
-                    .build(),
-                contentDescription = "Profile Picture",
-                modifier = Modifier.fillMaxSize()
-            )
-        } else {
-            // Placeholder κείμενο αν δεν υπάρχει εικόνα
-            Text("Your\nPhoto", color = Color.White, fontSize = 14.sp)
-        }
-
-        // Κόκκινο dot στην επάνω δεξιά γωνία
-        Box(
-            modifier = Modifier
-                .size(16.dp)
-                .clip(CircleShape)
-                .background(Color.Red)
-                .align(Alignment.TopEnd) // Τοποθετούμε το dot στην επάνω δεξιά γωνία
-                .padding(4.dp) // Ρυθμίστε την απόσταση αν χρειάζεται
-        )
-    }
-}
-
 
 
 

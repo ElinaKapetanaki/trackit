@@ -48,7 +48,7 @@ class LoginViewModel(
         }
     }
 
-    // Insert test users for development purposes
+    /* Insert test users for development purposes
     fun insertTestUser() {
         /* delete test user
         viewModelScope.launch {
@@ -68,7 +68,7 @@ class LoginViewModel(
         viewModelScope.launch {
             repository.insertUser(testUser2)
         }
-    }
+    }*/
 }
 
 // Data class for managing login state

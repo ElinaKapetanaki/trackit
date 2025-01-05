@@ -10,5 +10,5 @@ data class User(
     @ColumnInfo(name = "fullName") val fullName: String,
     @ColumnInfo(name = "emailOrUsername") val emailOrUsername: String,
     @ColumnInfo(name = "passwordHash") val passwordHash: String,
-    @ColumnInfo(name = "profileImageUri") val profileImageUri: String? = null // Νέο πεδίο για εικόνα προφίλ
+    @ColumnInfo(name = "gender") val gender: String
 )

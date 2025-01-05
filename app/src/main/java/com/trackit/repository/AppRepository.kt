@@ -11,7 +11,6 @@ interface AppRepository {
     suspend fun findUserByUsername(emailOrUsername: String): User?
     suspend fun findUserById(userId: Int): User?
     suspend fun updateUserProfile(userId: Int, fullName: String, username: String, passwordHash: String?)
-    suspend fun updateUserPhoto(userId: Int, photoUri: String)
 
     // Expenses
     suspend fun insertExpense(userId: Int, amount: Double, category: String, description: String, date: String)

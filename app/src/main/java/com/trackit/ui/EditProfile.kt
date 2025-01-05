@@ -1,10 +1,6 @@
 package com.trackit.ui
 
-import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -42,12 +38,6 @@ fun EditProfileScreen(
     val profileState by viewModel.profileState.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
-    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
-
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-        selectedImageUri = uri
-        viewModel.updateProfileImage(uri.toString())
-    }
 
     Scaffold(
         bottomBar = {
@@ -85,25 +75,23 @@ fun EditProfileScreen(
                             color = Color.White
                         )
                         Spacer(modifier = Modifier.height(16.dp))
+
+                        // Profile Image
                         Box(
                             modifier = Modifier
                                 .size(90.dp)
                                 .clip(CircleShape)
-                                .background(Color.Gray)
-                                .clickable { launcher.launch("image/*") },
+                                .background(Color.Gray),
                             contentAlignment = Alignment.Center
                         ) {
-                            if (selectedImageUri != null) {
-                                AsyncImage(
-                                    model = selectedImageUri,
-                                    contentDescription = "Profile Picture",
-                                    modifier = Modifier.clip(CircleShape),
-                                    contentScale = ContentScale.Crop
-                                )
-                            } else {
-                                Text("Your\nPhoto", color = Color.White, fontSize = 14.sp)
-                            }
+                            AsyncImage(
+                                model = profileState.genderDrawable,
+                                contentDescription = "Profile Picture",
+                                modifier = Modifier.clip(CircleShape),
+                                contentScale = ContentScale.Crop
+                            )
                         }
+
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = profileState.fullName,

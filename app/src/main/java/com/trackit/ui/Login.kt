@@ -38,7 +38,7 @@ fun LoginScreen(
     val loginState by loginViewModel.loginState.collectAsState()
 
     // Remove comments to add test user
-    loginViewModel.insertTestUser()
+    //loginViewModel.insertTestUser()
 
     Column(
         modifier = Modifier

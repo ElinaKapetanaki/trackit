@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.trackit.R
 import com.trackit.repository.AppRepository
 import kotlinx.coroutines.launch
 
@@ -37,7 +38,7 @@ class HomeViewModel(
     var incomeList by mutableStateOf(emptyList<Transaction>())
         private set
 
-    var profileImageUri by mutableStateOf<String?>(null)
+    var profileImageDrawable by mutableStateOf(R.drawable.other) // Default image for "other"
         private set
 
     val income: Double
@@ -128,7 +129,7 @@ class HomeViewModel(
     }
 
     /*
-     * Fetch the user's profile image URI.
+     * Fetch the user's profile image based on gender.
      */
     private fun fetchUserProfileImage() {
         viewModelScope.launch {
@@ -136,10 +137,14 @@ class HomeViewModel(
                 val currentUserId = userId.value
                 if (currentUserId != null) {
                     val user = repository.findUserById(currentUserId)
-                    profileImageUri = user?.profileImageUri // Get the image URI
+                    profileImageDrawable = when (user?.gender?.lowercase()) {
+                        "man" -> R.drawable.man
+                        "woman" -> R.drawable.woman
+                        else -> R.drawable.other
+                    }
                 }
             } catch (e: Exception) {
-                profileImageUri = null
+                profileImageDrawable = R.drawable.other
             }
         }
     }

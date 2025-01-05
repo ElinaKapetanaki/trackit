@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import com.trackit.R
 
 class EditProfileViewModel(
     private val repository: AppRepository,
@@ -31,10 +32,8 @@ class EditProfileViewModel(
                     _profileState.value = ProfileState(
                         fullName = it.fullName,
                         username = it.emailOrUsername,
-                        password = "", // Δεν εμφανίζουμε τον κωδικό
-                        fixedIncome = "", // Εφόσον δεν έχουμε πεδίο για αυτό
-                        fixedExpenses = "", // Εφόσον δεν έχουμε πεδίο για αυτό
-                        profileImageUri = it.profileImageUri // Ανάκτηση URI εικόνας από τον χρήστη
+                        password = "", // Do not display the password
+                        gender = it.gender // Store the gender string
                     )
                 }
             }
@@ -54,11 +53,6 @@ class EditProfileViewModel(
     // Update password
     fun updatePassword(newPassword: String) {
         _profileState.update { it.copy(password = newPassword) }
-    }
-
-    // Update profile image URI
-    fun updateProfileImage(newUri: String) {
-        _profileState.update { it.copy(profileImageUri = newUri) }
     }
 
     // Save changes to the profile
@@ -85,7 +79,7 @@ class EditProfileViewModel(
                 } else {
                     repository.findUserById(userId)?.passwordHash ?: ""
                 },
-                profileImageUri = state.profileImageUri // Αποθήκευση URI εικόνας
+                gender = state.gender // Keep the current gender
             )
 
             repository.insertUser(updatedUser)
@@ -99,7 +93,13 @@ data class ProfileState(
     val fullName: String = "",
     val username: String = "",
     val password: String = "",
-    val fixedIncome: String = "",
-    val fixedExpenses: String = "",
-    val profileImageUri: String? = null // Νέο πεδίο για εικόνα προφίλ
-)
+    val gender: String = "other" // Default gender
+) {
+    // Compute the drawable resource based on gender
+    val genderDrawable: Int
+        get() = when (gender.lowercase()) {
+            "man" -> R.drawable.man
+            "woman" -> R.drawable.woman
+            else -> R.drawable.other
+        }
+}

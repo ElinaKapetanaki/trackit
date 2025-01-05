@@ -3,7 +3,9 @@ package com.trackit.ui
 import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -83,6 +85,13 @@ fun SignupScreen(
             isPassword = true
         )
 
+        Spacer(modifier = Modifier.height(8.dp))
+
+        GenderSelection(
+            selectedGender = signUpState.gender,
+            onGenderSelected = { signUpViewModel.updateGender(it) }
+        )
+
         Spacer(modifier = Modifier.height(24.dp))
 
         BlackButton(
@@ -114,6 +123,67 @@ fun SignupScreen(
         )
     }
 }
+
+
+@Composable
+fun GenderSelection(selectedGender: String, onGenderSelected: (String) -> Unit) {
+    Column(horizontalAlignment = Alignment.Start) {
+        // Gender Options
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp, horizontal = 16.dp),
+            horizontalArrangement = Arrangement.SpaceAround,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            GenderOption(
+                label = "Man",
+                isSelected = selectedGender == "man",
+                onClick = { onGenderSelected("man") }
+            )
+            GenderOption(
+                label = "Woman",
+                isSelected = selectedGender == "woman",
+                onClick = { onGenderSelected("woman") }
+            )
+            GenderOption(
+                label = "Other",
+                isSelected = selectedGender == "other",
+                onClick = { onGenderSelected("other") }
+            )
+        }
+    }
+}
+
+@Composable
+fun GenderOption(label: String, isSelected: Boolean, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .clickable { onClick() }
+            .padding(horizontal = 8.dp, vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Radio Button
+        androidx.compose.material3.RadioButton(
+            selected = isSelected,
+            onClick = onClick,
+            colors = androidx.compose.material3.RadioButtonDefaults.colors(
+                selectedColor = Color.Black,
+                unselectedColor = Color.Gray
+            )
+        )
+
+        // Label
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(
+            text = label,
+            fontSize = 14.sp,
+            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+            color = if (isSelected) Color.Black else Color.Gray
+        )
+    }
+}
+
 
 @Preview(showBackground = true)
 @Composable

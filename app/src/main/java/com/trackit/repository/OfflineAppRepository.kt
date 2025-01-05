@@ -33,9 +33,6 @@ class OfflineAppRepository(private val database: AppDatabase) : AppRepository {
         database.userDao().insertUser(updatedUser)
     }
 
-    override suspend fun updateUserPhoto(userId: Int, photoUri: String) {
-        database.userDao().updateProfileImage(userId, photoUri)
-    }
 
     override suspend fun insertExpense(userId: Int, amount: Double, category: String, description: String, date: String) {
         database.expenseDao().insertExpense(
