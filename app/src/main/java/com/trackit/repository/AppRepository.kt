@@ -15,9 +15,10 @@ interface AppRepository {
     // Expenses
     suspend fun insertExpense(userId: Int, amount: Double, category: String, description: String, date: String)
     suspend fun getExpensesForUser(userId: Int): List<Expense>
-    suspend fun getWeeklyExpensesForUser(userId: Int): List<Expense>
-    suspend fun getMonthlyExpensesForUser(userId: Int): List<Expense>
+
+    suspend fun getExpensesForUserBetweenDates(userId: Int, startDate: String, endDate: String): List<Expense>
     suspend fun getCategoryExpensesForUser(userId: Int, category: String): List<Expense>
+
 
     // Income
     suspend fun insertIncome(userId: Int, amount: Double, description: String, date: String)

@@ -1,11 +1,14 @@
 package com.trackit.viewmodel
 
+import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.trackit.repository.AppRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class ExpenseViewModel(
     private val repository: AppRepository,
@@ -39,6 +42,16 @@ class ExpenseViewModel(
     fun updateCategory(newCategory: String) {
         _category.value = newCategory
     }
+
+
+
+    @SuppressLint("NewApi")
+    fun formatToIsoDate(inputDate: String): String {
+        val inputFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+        val outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        return LocalDate.parse(inputDate, inputFormatter).format(outputFormatter)
+    }
+
 
     fun updateDescription(newDescription: String) {
         _description.value = newDescription
@@ -86,7 +99,7 @@ class ExpenseViewModel(
                     amount = _amount.value.toDouble(),
                     category = _category.value,
                     description = _description.value,
-                    date = _date.value
+                    date = formatToIsoDate(_date.value)
                 )
                 onSuccess()
             } catch (e: Exception) {

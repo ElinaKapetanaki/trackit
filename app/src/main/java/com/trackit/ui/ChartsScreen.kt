@@ -1,6 +1,7 @@
 package com.trackit.ui
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -11,6 +12,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -58,7 +61,7 @@ fun ChartsScreen(
 
     // Get chart items from the ViewModel
     val chartItems = viewModel.chartItems
-
+    val currentMonthTitle by viewModel.currentMonthTitle.collectAsState()
     Scaffold(
         topBar = {
             PageTopBar(
@@ -100,11 +103,14 @@ fun ChartsScreen(
                 }
 
                 items(chartItems) { item ->
+                    val chartTitle = if (item.title == "Expenses by Month") currentMonthTitle else null
+
                     CategoryChartSection(
                         title = item.title,
                         description = item.description,
                         data = item.data,
-                        labels = item.labels
+                        labels = item.labels,
+                        chartTitle = chartTitle
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                 }
@@ -121,7 +127,8 @@ fun CategoryChartSection(
     title: String,
     description: String,
     data: List<Float>,
-    labels: List<String>
+    labels: List<String>,
+    chartTitle: String? = null // Optional chart title
 ) {
     Column(
         modifier = Modifier
@@ -131,6 +138,17 @@ fun CategoryChartSection(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // Render Chart Title if Provided
+        chartTitle?.let {
+            Text(
+                text = it,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Gray
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+
         Text(title, fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.Black)
         Spacer(modifier = Modifier.height(8.dp))
         Text(
@@ -158,6 +176,7 @@ fun CategoryChartSection(
     }
 }
 
+
 /**
  * LineChart Composable using MPAndroidChart to display line chart on a black background.
  */
@@ -167,12 +186,14 @@ fun LineChartComposable(
     labels: List<String>
 ) {
     AndroidView(
+
         factory = { context ->
             LineChart(context).apply {
                 layoutParams = android.view.ViewGroup.LayoutParams(
                     android.view.ViewGroup.LayoutParams.MATCH_PARENT,
                     android.view.ViewGroup.LayoutParams.MATCH_PARENT
                 )
+                Log.d("ChartData", "Weekly Data: ${data}, Labels: ${labels}")
                 description.isEnabled = false
                 setDrawGridBackground(false)
                 setPinchZoom(false)
@@ -181,14 +202,16 @@ fun LineChartComposable(
                 setBackgroundColor(android.graphics.Color.BLACK)
 
                 xAxis.apply {
-                    textSize = 16f // Increased text size for axis labels
+                    textSize = 16f
                     textColor = android.graphics.Color.WHITE
                     position = XAxis.XAxisPosition.BOTTOM
                     setDrawGridLines(false)
-                    granularity = 1f
+                    granularity = 1f // Ensure granularity to show labels properly
                     valueFormatter = IndexAxisValueFormatter(labels)
-                    setLabelCount(labels.size, false)
+                    setLabelCount(labels.size, true) // Force all labels to be shown
+                    isGranularityEnabled = true
                 }
+
                 axisLeft.apply {
                     textSize = 16f
                     textColor = android.graphics.Color.WHITE
@@ -220,11 +243,17 @@ fun LineChartComposable(
                 mode = LineDataSet.Mode.CUBIC_BEZIER
             }
             val lineData = LineData(dataSet)
+
+            // Debugging labels and data
+            Log.d("ChartData", "Labels: $labels")
+            Log.d("ChartData", "Data: $data")
+
             chart.data = lineData
             chart.invalidate()
         }
     )
 }
+
 
 /**
  * BarChart Composable using MPAndroidChart to display bar chart on a black background.
@@ -247,7 +276,7 @@ fun BarChartComposable(
                 setBackgroundColor(android.graphics.Color.BLACK)
 
                 xAxis.apply {
-                    textSize = 16f // Increased text size for axis labels
+                    textSize = 12f // Increased text size for axis labels
                     textColor = android.graphics.Color.WHITE
                     position = XAxis.XAxisPosition.BOTTOM
                     setDrawGridLines(false)

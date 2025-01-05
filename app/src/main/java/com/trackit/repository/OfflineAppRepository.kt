@@ -44,17 +44,15 @@ class OfflineAppRepository(private val database: AppDatabase) : AppRepository {
         return database.expenseDao().getExpensesForUser(userId)
     }
 
-    override suspend fun getWeeklyExpensesForUser(userId: Int): List<Expense> {
-        return database.expenseDao().getWeeklyExpensesForUser(userId)
-    }
 
-    override suspend fun getMonthlyExpensesForUser(userId: Int): List<Expense> {
-        return database.expenseDao().getMonthlyExpensesForUser(userId)
+    override suspend fun getExpensesForUserBetweenDates(userId: Int, startDate: String, endDate: String): List<Expense> {
+        return database.expenseDao().getExpensesBetweenDates(userId, startDate, endDate)
     }
 
     override suspend fun getCategoryExpensesForUser(userId: Int, category: String): List<Expense> {
-        return database.expenseDao().getCategoryExpensesForUser(userId, category)
+        return database.expenseDao().getExpensesByCategory(userId, category)
     }
+
 
     override suspend fun insertIncome(userId: Int, amount: Double, description: String, date: String) {
         database.incomeDao().insertIncome(
@@ -72,9 +70,13 @@ class OfflineAppRepository(private val database: AppDatabase) : AppRepository {
         database.expenseDao().deleteExpensesByUserId(user.id)
     }
 
+
+
+
     override suspend fun deleteUserByUsername(username: String) {
         val user = database.userDao().findUserByUsername(username)
             ?: throw IllegalArgumentException("User with username $username does not exist.")
         database.userDao().deleteUserByEmail(username)
     }
+
 }
