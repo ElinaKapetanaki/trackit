@@ -1,6 +1,7 @@
 package com.trackit.ui
 
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -25,6 +26,7 @@ enum class AppScreen {
     EditProfileScreen
 }
 
+@SuppressLint("NewApi")
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
@@ -133,6 +135,14 @@ fun AppNavigation() {
                 onExchangeClick = { navController.navigate(AppScreen.MoneyConversionScreen.name) },
                 onEditProfileClick = { /* Already on Edit Profile, no action */ }
             )
+        }
+
+        composable(AppScreen.MoneyConversionScreen.name) {
+            CurrencyConverterScreen(onHomeClick = { navController.navigate(AppScreen.HomeScreen.name) },
+                onChartsClick = { navController.navigate(AppScreen.ChartsScreen.name) },
+                onAddButtonClick = { navController.navigate(AppScreen.AddChoiceScreen.name) },
+                onExchangeClick = {  },
+                onEditProfileClick = { navController.navigate(AppScreen.EditProfileScreen.name) })
         }
     }
 }

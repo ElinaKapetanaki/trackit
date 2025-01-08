@@ -5,6 +5,9 @@ plugins {
     id("kotlin-kapt")
 }
 
+
+
+
 android {
     namespace = "com.trackit"
     compileSdk = 34
@@ -40,10 +43,27 @@ android {
     buildFeatures {
         compose = true
     }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.1" // Ensure this matches your Compose version
+    }
+
     buildToolsVersion = "34.0.0"
 }
 
 dependencies {
+    implementation ("androidx.compose.ui:ui:1.5.1") // Core Compose library
+    implementation ("androidx.compose.material:material:1.5.1") // Material components
+    implementation ("androidx.compose.material3:material3:1.1.1") // Material 3 components
+    implementation ("androidx.compose.foundation:foundation:1.5.1") // Foundation library
+    implementation ("androidx.compose.runtime:runtime:1.5.1") // Runtime for Compose
+    implementation ("androidx.compose.ui:ui-text:1.5.1") // Required for text and input
+    implementation ("androidx.compose.ui:ui:1.5.1")
+    implementation ("androidx.compose.material:material:1.5.1")
+    implementation ("androidx.compose.material3:material3:1.1.1")
+    implementation ("androidx.compose.ui:ui-text:1.5.1") // Required for text input features
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation(libs.mpandroidchart)
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.core.ktx)
@@ -74,3 +94,4 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }
+
