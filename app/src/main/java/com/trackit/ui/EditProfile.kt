@@ -184,6 +184,6 @@ fun EditProfileScreenPreview() {
         onChartsClick = {},
         onAddButtonClick = {},
         onExchangeClick = {},
-        onEditProfileClick = {}
+        onEditProfileClick = {},
     )
 }
