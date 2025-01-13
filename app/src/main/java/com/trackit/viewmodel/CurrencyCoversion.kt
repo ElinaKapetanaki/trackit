@@ -1,24 +1,24 @@
 package com.trackit.viewmodel
 
 import android.util.Log
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.trackit.repository.CurrencyApiHandler
-import com.trackit.repository.ExchangeRatesResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
+
 
 class CurrencyViewModel : ViewModel() {
 
     private val apiHandler = CurrencyApiHandler()
 
-    // Use mutableStateOf for conversionResult and isLoading, without delegation
     var conversionResult = mutableStateOf("")
     var isLoading = mutableStateOf(false)
 
-    fun fetchExchangeRates(baseCurrency: String, targetCurrency: String, apiKey: String, amount: Double) {
+    fun fetchExchangeRates(baseCurrency: String, targetCurrency: String, apiKey: String, amount: Double, onResultUpdated: (String) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             isLoading.value = true
             try {
@@ -27,20 +27,42 @@ class CurrencyViewModel : ViewModel() {
                     val rate = response.rates?.get(targetCurrency)
                     if (rate != null) {
                         val convertedAmount = amount * rate
-                        conversionResult.value = "Result: %.2f $targetCurrency".format(convertedAmount)
+                        val resultString = "Result: %.2f $targetCurrency".format(convertedAmount)
+
+                        // Ενημερώνουμε το UI στο κύριο νήμα
+                        withContext(Dispatchers.Main) {
+                            conversionResult.value = resultString
+                            onResultUpdated(resultString) // Notify the UI
+                        }
                     } else {
-                        conversionResult.value = "Conversion rate not available."
+                        // Ενημερώνουμε το UI στο κύριο νήμα
+                        withContext(Dispatchers.Main) {
+                            conversionResult.value = "Conversion rate not available."
+                            onResultUpdated("Conversion rate not available.")
+                        }
                     }
                 }.onFailure { error ->
                     Log.e("CurrencyViewModel", "Error: ${error.message}")
-                    conversionResult.value = "Error: ${error.message}"
+                    // Ενημερώνουμε το UI στο κύριο νήμα
+                    withContext(Dispatchers.Main) {
+                        conversionResult.value = "Error: ${error.message}"
+                        onResultUpdated("Error: ${error.message}")
+                    }
                 }
             } catch (e: Exception) {
                 Log.e("CurrencyViewModel", "Unexpected Error: ${e.message}")
-                conversionResult.value = "Unexpected Error Occurred."
+                // Ενημερώνουμε το UI στο κύριο νήμα
+                withContext(Dispatchers.Main) {
+                    conversionResult.value = "Unexpected Error Occurred."
+                    onResultUpdated("Unexpected Error Occurred.")
+                }
             } finally {
-                isLoading.value = false
+                // Ενημερώνουμε το UI στο κύριο νήμα
+                withContext(Dispatchers.Main) {
+                    isLoading.value = false
+                }
             }
         }
     }
+
 }

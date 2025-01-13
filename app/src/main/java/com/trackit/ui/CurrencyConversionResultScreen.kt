@@ -3,22 +3,18 @@ package com.trackit.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.trackit.ui.components.BottomNavBar
-import com.trackit.viewmodel.CurrencyViewModel
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.sp
+import com.trackit.ui.components.BottomNavBar
+import androidx.compose.ui.draw.clip
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -27,8 +23,6 @@ fun CurrencyConversionResultScreen(
     result: String,
     onBackClick: () -> Unit
 ) {
-
-
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
