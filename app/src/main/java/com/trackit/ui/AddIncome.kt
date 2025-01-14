@@ -173,10 +173,7 @@ fun AddIncomeScreen(
                                             // Κλήση της saveIncome μέσα σε coroutineScope
                                             incomeViewModel.saveIncome(
                                                 onSuccess = {
-                                                    coroutineScope.launch {
-                                                        snackbarHostState.showSnackbar("Income saved successfully!")
                                                         onSaveClick()
-                                                    }
                                                 },
                                                 onError = { message ->
                                                     coroutineScope.launch {

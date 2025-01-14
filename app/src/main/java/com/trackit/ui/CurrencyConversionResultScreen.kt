@@ -17,11 +17,16 @@ import com.trackit.ui.components.BottomNavBar
 import androidx.compose.ui.draw.clip
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
+@OptIn(ExperimentalMaterial3Api::class)
 fun CurrencyConversionResultScreen(
     result: String,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onHomeClick: () -> Unit,
+    onChartsClick: () -> Unit,
+    onAddButtonClick: () -> Unit,
+    onExchangeClick: () -> Unit,
+    onEditProfileClick: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -47,11 +52,11 @@ fun CurrencyConversionResultScreen(
         },
         bottomBar = {
             BottomNavBar(
-                onHomeClick = onBackClick,
-                onChartsClick = { /* Handle charts click */ },
-                onAddButtonClick = { /* Handle add button click */ },
-                onExchangeClick = { /* Handle exchange click */ },
-                onEditProfileClick = { /* Handle edit profile click */ }
+                onHomeClick = onHomeClick,
+                onChartsClick = onChartsClick,
+                onAddButtonClick = onAddButtonClick,
+                onExchangeClick = onExchangeClick,
+                onEditProfileClick = onEditProfileClick
             )
         },
         content = { innerPadding ->

@@ -18,14 +18,12 @@
 3. **Charts and Analytics**:
    - Interactive graphs to visualize spending trends.
    - Analyze expenses by category, weekly, or monthly breakdown.
-   - Visual tools to track savings and financial health.
 
 4. **Currency Conversion**:
    - Convert amounts into different currencies using a free API.
-   - Helps users manage international finances.
 
 5. **Profile Management**:
-   - Update personal details like full name, username, and fixed expenses.
+   - Update personal details like full name, username.
    - Set a new password.
 
 6. **Responsive UI**:

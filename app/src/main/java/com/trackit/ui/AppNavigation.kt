@@ -136,21 +136,6 @@ fun AppNavigation() {
                 onExchangeClick = { navController.navigate(AppScreen.MoneyConversionScreen.name) },
                 onEditProfileClick = { /* Already on Edit Profile, no action */ }
             )
-
-            composable(
-                route = "${AppScreen.CurrencyConversionResultScreen.name}?result={result}",
-                arguments = listOf(navArgument("result") {
-                    type = NavType.StringType
-                    defaultValue = "No result"
-                })
-            ) { backStackEntry ->
-                val result = backStackEntry.arguments?.getString("result") ?: "No result"
-                CurrencyConversionResultScreen(
-                    result = result,
-                    onBackClick = { navController.popBackStack() }
-                )
-            }
-
         }
 
         composable(AppScreen.MoneyConversionScreen.name) {
@@ -174,11 +159,13 @@ fun AppNavigation() {
             val result = backStackEntry.arguments?.getString("result") ?: "No result"
             CurrencyConversionResultScreen(
                 result = result,
-                onBackClick = { navController.popBackStack() } // Navigate back
+                onBackClick = { navController.popBackStack() },
+                onHomeClick = { navController.navigate(AppScreen.HomeScreen.name) },
+                onChartsClick = { navController.navigate(AppScreen.ChartsScreen.name) },
+                onAddButtonClick = { navController.navigate(AppScreen.AddChoiceScreen.name) },
+                onExchangeClick = { navController.navigate(AppScreen.MoneyConversionScreen) },
+                onEditProfileClick = { navController.navigate(AppScreen.EditProfileScreen.name) }
             )
         }
-
-
-
     }
 }

@@ -1,4 +1,4 @@
-package com.trackit.repository
+package com.trackit.repository.api
 
 import android.util.Log
 import retrofit2.HttpException
