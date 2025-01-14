@@ -22,7 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -30,7 +29,6 @@ import com.trackit.VideoActivity
 import com.trackit.ui.components.BlackButton
 import com.trackit.ui.components.LinkedText
 import com.trackit.ui.components.StyledTextField
-import com.trackit.ui.theme.SignUpActivityTheme
 import com.trackit.viewmodel.AppViewModelProvider
 import com.trackit.viewmodel.SignUpViewModel
 
@@ -191,11 +189,3 @@ fun GenderOption(label: String, isSelected: Boolean, onClick: () -> Unit) {
     }
 }
 
-
-@Preview(showBackground = true)
-@Composable
-fun SignupScreenPreview() {
-    SignUpActivityTheme {
-        SignupScreen(onSignupComplete = {}, onLogInClick = {})
-    }
-}

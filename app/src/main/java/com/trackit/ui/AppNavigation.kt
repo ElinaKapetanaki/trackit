@@ -18,7 +18,7 @@ enum class AppScreen {
     AddExpenseScreen,
     AddIncomeScreen,
     ChartsScreen,
-    MoneyConversionScreen, /*change to actual name*/
+    MoneyConversionScreen,
     EditProfileScreen,
     CurrencyConversionResultScreen
 }

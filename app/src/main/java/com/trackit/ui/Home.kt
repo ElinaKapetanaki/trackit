@@ -25,7 +25,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -33,7 +32,6 @@ import coil.compose.AsyncImage
 import com.trackit.R
 import com.trackit.ui.components.BottomNavBar
 import com.trackit.ui.components.PageTopBar
-import com.trackit.ui.theme.SignUpActivityTheme
 import com.trackit.viewmodel.AppViewModelProvider
 import com.trackit.viewmodel.HomeViewModel
 import com.trackit.viewmodel.Transaction
@@ -300,17 +298,3 @@ fun TransactionList(transactions: List<Transaction>) {
     }
 }
 
-
-@Preview(showBackground = true)
-@Composable
-fun HomeScreenPreview() {
-    SignUpActivityTheme {
-        HomeScreen(
-            successMessage = "Expense successfully added!", onAddButtonClick = {},
-            onHomeClick = {},
-            onChartsClick = {},
-            onExchangeClick = {},
-            onEditProfileClick = {},
-        )
-    }
-}

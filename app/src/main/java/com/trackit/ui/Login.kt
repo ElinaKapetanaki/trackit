@@ -19,7 +19,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -27,7 +26,6 @@ import com.trackit.R
 import com.trackit.ui.components.BlackButton
 import com.trackit.ui.components.LinkedText
 import com.trackit.ui.components.StyledTextField
-import com.trackit.ui.theme.SignUpActivityTheme
 import com.trackit.viewmodel.AppViewModelProvider
 import com.trackit.viewmodel.LoginViewModel
 
@@ -111,11 +109,3 @@ fun LoginScreen(
     }
 }
 
-
-@Preview(showBackground = true)
-@Composable
-fun LoginScreenPreview() {
-    SignUpActivityTheme {
-        LoginScreen(onSignUpClick = {}, onLoginSuccess = {})
-    }
-}

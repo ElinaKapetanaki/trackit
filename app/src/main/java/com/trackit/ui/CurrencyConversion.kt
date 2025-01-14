@@ -190,7 +190,7 @@ fun MoneyConversionScreen(
                                     apiKey = apiKey,
                                     amount = amountDouble
                                 ) { result ->
-                                    onResultClick(result) // Pass the updated result
+                                    onResultClick(result)
                                 }
                             }
                         },
