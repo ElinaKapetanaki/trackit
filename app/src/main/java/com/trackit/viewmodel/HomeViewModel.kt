@@ -154,13 +154,14 @@ class HomeViewModel(
      */
     private fun getColorByCategory(category: String): Color {
         return when (category) {
-            "Food" -> Color(0xFFFFE5E5)            // Pale Red
-            "Supermarket" -> Color(0xFFFFF9E6)     // Pale Yellow
-            "Shopping" -> Color(0xFFE6F0FF)        // Pale Blue
-            "Fun" -> Color(0xFFFDE6F2)             // Pale Pink
-            "Others" -> Color(0xFFE6E6E6)          // Pale Gray
-            "Income" -> Color(0xFFE6FFE6)          // Pale Green
-            else -> Color(0xFFD9D9D9)              // Default Pale Gray
+            "Food" -> Color(0xFFFFCACA)            // Vivid Pale Red
+            "Supermarket" -> Color(0xFFFFF1B0)     // Vivid Pale Yellow
+            "Shopping" -> Color(0xFFB0DFFF)        // Vivid Pale Blue
+            "Fun" -> Color(0xFFFFC2E7)             // Vivid Pale Pink
+            "Others" -> Color(0xFFD3D3D3)          // Vivid Pale Gray
+            "Income" -> Color(0xFFB0FFB0)          // Vivid Pale Green
+            else -> Color(0xFFCFCFCF)              // Default Vivid Pale Gray
         }
+
     }
 }

@@ -2,13 +2,13 @@ package com.trackit.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.trackit.R
 import com.trackit.database.User
 import com.trackit.repository.AppRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import com.trackit.R
 
 class EditProfileViewModel(
     private val repository: AppRepository,

@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.VideoView
 import androidx.appcompat.app.AppCompatActivity
-import com.trackit.R
 
 class VideoActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

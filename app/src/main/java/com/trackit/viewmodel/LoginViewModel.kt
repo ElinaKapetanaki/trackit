@@ -47,28 +47,6 @@ class LoginViewModel(
             onResult(isSuccess)
         }
     }
-
-    /* Insert test users for development purposes
-    fun insertTestUser() {
-        /* delete test user
-        viewModelScope.launch {
-            repository.deleteUserExpensesByUsername("testUser")
-            repository.deleteUserByUsername("testUser")
-        }*/
-
-        val hashedPassword = BCrypt.hashpw("password123", BCrypt.gensalt())
-        val testUser = User(fullName = "Test User", emailOrUsername = "testUser", passwordHash = hashedPassword)
-
-        viewModelScope.launch {
-            repository.insertUser(testUser)
-        }
-
-        val hashedPassword2 = BCrypt.hashpw("123", BCrypt.gensalt())
-        val testUser2 = User(fullName = "Elina Kapetanaki", emailOrUsername = "elina", passwordHash = hashedPassword2)
-        viewModelScope.launch {
-            repository.insertUser(testUser2)
-        }
-    }*/
 }
 
 // Data class for managing login state

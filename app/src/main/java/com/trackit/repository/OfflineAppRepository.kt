@@ -63,20 +63,4 @@ class OfflineAppRepository(private val database: AppDatabase) : AppRepository {
     override suspend fun getIncomeForUser(userId: Int): List<Income> {
         return database.incomeDao().getIncomeForUser(userId)
     }
-
-    override suspend fun deleteUserExpensesByUsername(username: String) {
-        val user = database.userDao().findUserByUsername(username)
-            ?: throw IllegalArgumentException("User with username $username does not exist.")
-        database.expenseDao().deleteExpensesByUserId(user.id)
-    }
-
-
-
-
-    override suspend fun deleteUserByUsername(username: String) {
-        val user = database.userDao().findUserByUsername(username)
-            ?: throw IllegalArgumentException("User with username $username does not exist.")
-        database.userDao().deleteUserByEmail(username)
-    }
-
 }

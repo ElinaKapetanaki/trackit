@@ -24,7 +24,4 @@ interface AppRepository {
     suspend fun insertIncome(userId: Int, amount: Double, description: String, date: String)
     suspend fun getIncomeForUser(userId: Int): List<Income>
 
-    // To delete test data
-    suspend fun deleteUserExpensesByUsername(username: String)
-    suspend fun deleteUserByUsername(username: String)
 }

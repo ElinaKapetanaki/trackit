@@ -3,8 +3,6 @@ package com.trackit.ui
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -41,10 +39,6 @@ fun LoginScreen(
 ) {
     val context = LocalContext.current
     val loginState by loginViewModel.loginState.collectAsState()
-
-    // Remove comments to add test user
-    //loginViewModel.insertTestUser()
-
 
     Column(
         modifier = Modifier
