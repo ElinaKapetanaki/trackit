@@ -56,8 +56,6 @@ fun AddIncomeScreen(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
-
-    // Παρακολούθηση καταστάσεων από το ViewModel
     val amount by incomeViewModel.amount.collectAsState()
     val description by incomeViewModel.description.collectAsState()
     val date by incomeViewModel.date.collectAsState()
@@ -117,7 +115,6 @@ fun AddIncomeScreen(
                             TextField(
                                 value = amount,
                                 onValueChange = {
-                                    // Επιτρέπουμε μόνο αριθμούς και δεκαδικά
                                     if (it.matches(Regex("^\\d*\\.?\\d*\$"))) {
                                         incomeViewModel.updateAmount(it)
                                     }
@@ -191,7 +188,7 @@ fun AddIncomeScreen(
                                             snackbarHostState.showSnackbar("Please select a valid date.")
                                         }
                                         else -> {
-                                            // Κλήση της saveIncome μέσα σε coroutineScope
+                                            // Call saveIncome with coroutineScope
                                             incomeViewModel.saveIncome(
                                                 onSuccess = {
                                                         onSaveClick()

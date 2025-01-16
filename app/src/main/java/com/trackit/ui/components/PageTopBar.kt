@@ -29,7 +29,7 @@ fun PageTopBar(
             )
         },
         navigationIcon = {
-            onBackClick?.let { // Only include the navigation icon if onBackClick is not null
+            onBackClick?.let {
                 IconButton(onClick = it) {
                     Icon(
                         imageVector = Icons.Default.ArrowBack,

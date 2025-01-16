@@ -21,7 +21,6 @@ class VideoActivity : AppCompatActivity() {
             true
         }
 
-
         videoView.setOnCompletionListener {
             finish()
         }

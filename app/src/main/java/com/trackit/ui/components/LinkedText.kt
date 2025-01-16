@@ -36,7 +36,7 @@ fun LinkedText(
 
         TextButton(
             onClick = onClick,
-            contentPadding = PaddingValues(0.dp) // Remove padding for seamless appearance
+            contentPadding = PaddingValues(0.dp)
         ) {
             Text(
                 text = clickableText,

@@ -54,15 +54,12 @@ fun ChartsScreen(
     onExchangeClick: () -> Unit,
     onEditProfileClick: () -> Unit
 ) {
-    // Get the ViewModel with the Factory
     val viewModel: ChartsViewModel = viewModel(
         factory = AppViewModelProvider.Factory
     )
 
-    // Fetch chart data from the ViewModel
     viewModel.fetchChartData()
 
-    // Get chart items from the ViewModel
     val chartItems = viewModel.chartItems
     val currentMonthTitle by viewModel.currentMonthTitle.collectAsState()
     Scaffold(
@@ -129,7 +126,7 @@ fun CategoryChartSection(
     description: String,
     data: List<Float>,
     labels: List<String>,
-    chartTitle: String? = null // Optional chart title
+    chartTitle: String? = null
 ) {
     Column(
         modifier = Modifier
@@ -139,7 +136,6 @@ fun CategoryChartSection(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Render Chart Title if Provided
         chartTitle?.let {
             Text(
                 text = it,
@@ -190,12 +186,11 @@ fun LineChartComposable(
                     android.view.ViewGroup.LayoutParams.MATCH_PARENT,
                     android.view.ViewGroup.LayoutParams.MATCH_PARENT
                 )
-                Log.d("ChartData", "Weekly Data: ${data}, Labels: ${labels}")
                 description.isEnabled = false
                 setDrawGridBackground(false)
                 setPinchZoom(false)
                 animateX(1500)
-                setExtraOffsets(15f, 20f, 15f, 20f) // Added extra offsets for better spacing
+                setExtraOffsets(15f, 20f, 15f, 20f)
                 setBackgroundColor(android.graphics.Color.BLACK)
 
                 xAxis.apply {
@@ -203,9 +198,9 @@ fun LineChartComposable(
                     textColor = android.graphics.Color.WHITE
                     position = XAxis.XAxisPosition.BOTTOM
                     setDrawGridLines(false)
-                    granularity = 1f // Ensure granularity to show labels properly
+                    granularity = 1f
                     valueFormatter = IndexAxisValueFormatter(labels)
-                    setLabelCount(labels.size, true) // Force all labels to be shown
+                    setLabelCount(labels.size, true)
                     isGranularityEnabled = true
                 }
 
@@ -241,10 +236,6 @@ fun LineChartComposable(
             }
             val lineData = LineData(dataSet)
 
-            // Debugging labels and data
-            Log.d("ChartData", "Labels: $labels")
-            Log.d("ChartData", "Data: $data")
-
             chart.data = lineData
             chart.invalidate()
         }
@@ -269,7 +260,7 @@ fun BarChartComposable(
                 setBackgroundColor(android.graphics.Color.BLACK)
 
                 xAxis.apply {
-                    textSize = 12f // Increased text size for axis labels
+                    textSize = 12f
                     textColor = android.graphics.Color.WHITE
                     position = XAxis.XAxisPosition.BOTTOM
                     setDrawGridLines(false)
@@ -291,14 +282,14 @@ fun BarChartComposable(
             }
             val dataSet = BarDataSet(entries, "Categories").apply {
                 colors = listOf(
-                    android.graphics.Color.parseColor("#FFCCCB"), // Food
-                    android.graphics.Color.parseColor("#AECBFA"), // Shopping
-                    android.graphics.Color.parseColor("#F8BBE8"), // Entertainment
-                    android.graphics.Color.parseColor("#B8E4C9"),  // Rent
-                    android.graphics.Color.parseColor("#FFD700")  // Other
+                    android.graphics.Color.parseColor("#FFCCCB"),
+                    android.graphics.Color.parseColor("#AECBFA"),
+                    android.graphics.Color.parseColor("#F8BBE8"),
+                    android.graphics.Color.parseColor("#B8E4C9"),
+                    android.graphics.Color.parseColor("#FFD700")
                 )
                 valueTextColor = android.graphics.Color.WHITE
-                valueTextSize = 16f // Increased text size for values
+                valueTextSize = 16f
             }
             chart.data = BarData(dataSet)
             chart.invalidate()

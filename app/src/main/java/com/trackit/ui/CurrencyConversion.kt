@@ -52,7 +52,7 @@ fun MoneyConversionScreen(
     onAddButtonClick: () -> Unit,
     onExchangeClick: () -> Unit,
     onEditProfileClick: () -> Unit,
-    onResultClick: (String) -> Unit // Navigate to the result screen
+    onResultClick: (String) -> Unit
 ) {
     var amount by remember { mutableStateOf("") }
     var toCurrency by remember { mutableStateOf("USD") }
@@ -146,15 +146,14 @@ fun MoneyConversionScreen(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // EUR inside a box that mimics the dropdown style
                     Box(
                         modifier = Modifier
-                            .fillMaxWidth()  // Take up the full width
-                            .height(48.dp)  // Set height to match a typical dropdown
-                            .clip(RoundedCornerShape(12.dp))  // Rounded corners
-                            .background(Color.DarkGray)  // Background color for the box
-                            .padding(horizontal = 16.dp),  // Padding inside the box
-                        contentAlignment = Alignment.CenterStart  // Align the text to the start (left)
+                            .fillMaxWidth()
+                            .height(48.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(Color.DarkGray)
+                            .padding(horizontal = 16.dp),
+                        contentAlignment = Alignment.CenterStart
                     ) {
                         Text(
                             text = "EUR",  // Static currency text

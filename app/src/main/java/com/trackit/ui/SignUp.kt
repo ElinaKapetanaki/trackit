@@ -106,11 +106,9 @@ fun SignupScreen(
                     if (isSuccess) {
                         Toast.makeText(context, "Signup Successful!", Toast.LENGTH_SHORT).show()
 
-                        // Εκκίνηση του VideoActivity
                         val intent = Intent(context, VideoActivity::class.java)
                         context.startActivity(intent)
 
-                        // Κλήση του callback για ολοκλήρωση
                         onSignupComplete()
                     } else {
                         Toast.makeText(context, errorMessage ?: "Sign up failed", Toast.LENGTH_SHORT).show()

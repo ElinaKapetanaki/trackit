@@ -47,7 +47,7 @@ fun HomeScreen(
     onEditProfileClick: () -> Unit
 ) {
     // Observing data from the ViewModel
-    val transactions = viewModel.transactions + viewModel.incomeList // Combine expenses and incomes
+    val transactions = viewModel.mergeAndSortTransactions() // Combine expenses and incomes
     val balance = viewModel.balance
     val income = viewModel.income
     val expenses = viewModel.expenses

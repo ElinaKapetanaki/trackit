@@ -134,6 +134,7 @@ fun AppNavigation() {
             )
         }
 
+        // MoneyConversionRoute
         composable(AppScreen.MoneyConversionScreen.name) {
             MoneyConversionScreen(
                 onHomeClick = { navController.navigate(AppScreen.HomeScreen.name) },
@@ -142,12 +143,12 @@ fun AppNavigation() {
                 onExchangeClick = { },
                 onEditProfileClick = { navController.navigate(AppScreen.EditProfileScreen.name) },
                 onResultClick =  { result ->
-                    // Pass result to CurrencyConversionResultScreen
                     navController.navigate("${AppScreen.CurrencyConversionResultScreen.name}/$result")
-                } // Pass the navigation here
+                }
             )
         }
 
+        // CurrencyConversion Route
         composable(
             route = "${AppScreen.CurrencyConversionResultScreen.name}/{result}",
             arguments = listOf(navArgument("result") { type = NavType.StringType })

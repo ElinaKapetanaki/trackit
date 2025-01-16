@@ -32,8 +32,8 @@ class EditProfileViewModel(
                     _profileState.value = ProfileState(
                         fullName = it.fullName,
                         username = it.emailOrUsername,
-                        password = "", // Do not display the password
-                        gender = it.gender // Store the gender string
+                        password = "",
+                        gender = it.gender
                     )
                 }
             }

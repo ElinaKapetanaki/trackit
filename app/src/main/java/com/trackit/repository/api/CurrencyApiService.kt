@@ -43,9 +43,6 @@ class CurrencyApiHandler {
 
     private val api = CurrencyApi.service
 
-    /**
-     * Fetch exchange rates and handle errors gracefully.
-     */
     suspend fun getExchangeRates(baseCurrency: String, apiKey: String): Result<ExchangeRatesResponse> {
         Log.d("CurrencyApiHandler", "Request URL: https://api.exchangeratesapi.io/v1/latest?base=$baseCurrency&access_key=$apiKey")
 

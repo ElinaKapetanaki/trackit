@@ -46,12 +46,12 @@ fun LoginScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
 
     ) {
-        // Add the logo image with a black border
+        // logo
         Image(
-            painter = painterResource(id = R.drawable.logo), // Use your image resource here
+            painter = painterResource(id = R.drawable.logo),
             contentDescription = "Logo",
             modifier = Modifier
-                .padding(bottom = 24.dp, top= 50.dp) // Adjust padding as needed
+                .padding(bottom = 24.dp, top= 50.dp)
             ,
             contentScale = ContentScale.Fit
         )

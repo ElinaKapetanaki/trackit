@@ -1,5 +1,6 @@
 package com.trackit.viewmodel
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -9,6 +10,8 @@ import androidx.lifecycle.viewModelScope
 import com.trackit.R
 import com.trackit.repository.AppRepository
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 data class Transaction(
     val id: Int,
@@ -57,9 +60,6 @@ class HomeViewModel(
         fetchUserProfileImage()
     }
 
-    /*
-     * Fetch user-specific data such as name or profile information.
-     */
     private fun fetchUserData() {
         viewModelScope.launch {
             try {
@@ -74,9 +74,55 @@ class HomeViewModel(
         }
     }
 
-    /*
-     * Fetch transactions for the logged-in user from the database.
-     */
+    // Helper function to parse dates
+    @SuppressLint("NewApi")
+    private fun parseDate(date: String): LocalDate {
+        val supportedFormats = listOf(
+            DateTimeFormatter.ofPattern("yyyy-MM-dd"),
+            DateTimeFormatter.ofPattern("dd/MM/yyyy")
+        )
+
+        for (formatter in supportedFormats) {
+            try {
+                return LocalDate.parse(date, formatter)
+            } catch (_: Exception) { }
+        }
+
+        throw IllegalArgumentException("Invalid date format: $date. Supported formats are yyyy-MM-dd or dd/MM/yyyy.")
+    }
+
+    @SuppressLint("NewApi")
+    private fun formatToIsoDate(inputDate: String): String {
+        val supportedFormats = listOf(
+            DateTimeFormatter.ofPattern("yyyy-MM-dd"),
+            DateTimeFormatter.ofPattern("dd/MM/yyyy")
+        )
+
+        for (formatter in supportedFormats) {
+            try {
+                val parsedDate = LocalDate.parse(inputDate, formatter)
+                return parsedDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) // Format to yyyy-MM-dd
+            } catch (e: Exception) {
+                // Continue trying other formats
+            }
+        }
+
+        throw IllegalArgumentException("Invalid date format: $inputDate. Supported formats are yyyy-MM-dd or dd/MM/yyyy.")
+    }
+
+    @SuppressLint("NewApi")
+    fun mergeAndSortTransactions(): List<Transaction> {
+        // Combine transactions and incomeList
+        val allTransactions = transactions + incomeList
+
+        // Parse, reformat, and sort by date (most recent first)
+        return allTransactions.map { transaction ->
+            transaction.copy(
+                date = formatToIsoDate(transaction.date) // Ensure the date is formatted as yyyy-MM-dd
+            )
+        }.sortedByDescending { parseDate(it.date) } // Sort by date
+    }
+
     private fun fetchTransactions() {
         viewModelScope.launch {
             try {
@@ -93,7 +139,7 @@ class HomeViewModel(
                             category = expense.category,
                             isExpense = true // Mark all fetched data as expenses
                         )
-                    }
+                    }.sortedByDescending { parseDate(it.date) } // Ensure parseDate returns a LocalDate
                 }
             } catch (e: Exception) {
                 transactions = emptyList()
@@ -101,9 +147,6 @@ class HomeViewModel(
         }
     }
 
-    /*
-     * Fetch income for the logged-in user from the database.
-     */
     private fun fetchIncome() {
         viewModelScope.launch {
             try {
@@ -118,9 +161,9 @@ class HomeViewModel(
                             date = income.date,
                             color = getColorByCategory("Income"),
                             category = "Income",
-                            isExpense = false // Mark all fetched data as income
+                            isExpense = false
                         )
-                    }
+                    }.sortedByDescending { parseDate(it.date) }
                 }
             } catch (e: Exception) {
                 incomeList = emptyList()
@@ -128,9 +171,6 @@ class HomeViewModel(
         }
     }
 
-    /*
-     * Fetch the user's profile image based on gender.
-     */
     private fun fetchUserProfileImage() {
         viewModelScope.launch {
             try {
@@ -149,19 +189,15 @@ class HomeViewModel(
         }
     }
 
-    /*
-     * Helper function to determine color based on the category.
-     */
     private fun getColorByCategory(category: String): Color {
         return when (category) {
-            "Food" -> Color(0xFFFFCACA)            // Vivid Pale Red
-            "Supermarket" -> Color(0xFFFFF1B0)     // Vivid Pale Yellow
-            "Shopping" -> Color(0xFFB0DFFF)        // Vivid Pale Blue
-            "Fun" -> Color(0xFFFFC2E7)             // Vivid Pale Pink
-            "Others" -> Color(0xFFD3D3D3)          // Vivid Pale Gray
-            "Income" -> Color(0xFFB0FFB0)          // Vivid Pale Green
-            else -> Color(0xFFCFCFCF)              // Default Vivid Pale Gray
+            "Food" -> Color(0xFFFFCACA)
+            "Supermarket" -> Color(0xFFFFF1B0)
+            "Shopping" -> Color(0xFFB0DFFF)
+            "Fun" -> Color(0xFFFFC2E7)
+            "Others" -> Color(0xFFD3D3D3)
+            "Income" -> Color(0xFFB0FFB0)
+            else -> Color(0xFFCFCFCF)
         }
-
     }
 }
