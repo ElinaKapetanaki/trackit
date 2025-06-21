@@ -49,12 +49,11 @@
 
 ---
 
-## 💾 How to Build and Run
+## How to Build and Run
 
 1. **Clone the Repository**:
    ```bash
    git clone https://github.com/ElinaKapetanaki/trackit.git
-   cd trackit
 2. **Open project on Android Studio**
 3. **Sync Gradle Files**
 4. **Run the application on your emulator**
