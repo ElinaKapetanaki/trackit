@@ -32,7 +32,7 @@
 
 ---
 
-## 📚 Technical Details
+## Technical Details
 
 - **Programming Language**: Kotlin
 - **Framework**: Jetpack Compose
